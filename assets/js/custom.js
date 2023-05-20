@@ -438,7 +438,7 @@ $(function() {
 });
 
 $(document).ready(function(){
-	setInterval(function () {
+	/* setInterval(function () {
 		$.ajax({
 			url: "ajax/menu.ajax.php",
 			type: "POST",
@@ -490,7 +490,7 @@ $(document).ready(function(){
 				}
 			}
 		});
-	}, 2000);
+	}, 2000); */
 })
 
 

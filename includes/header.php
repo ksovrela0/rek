@@ -89,7 +89,7 @@
                   
                   <p class="main-notification-text"><?php echo $userInfo; ?></p>
                </div>
-               <a class="dropdown-item border-top" href=""> <i class="fe fe-user"></i> My Profile </a> <a class="dropdown-item" href=""> <i class="fe fe-edit"></i> Edit Profile </a> <a class="dropdown-item" href=""> <i class="fe fe-settings"></i> Account Settings </a> <a class="dropdown-item" href=""> <i class="fe fe-settings"></i> Support </a> <a class="dropdown-item" href=""> <i class="fe fe-compass"></i> Activity </a> <a class="dropdown-item" href="index.php?act=sign_out"> <i class="fe fe-power"></i> Sign Out </a> 
+               <a class="dropdown-item" href="index.php?act=sign_out"> <i class="fe fe-power"></i> Sign Out </a> 
             </div>
          </div>
       </div>

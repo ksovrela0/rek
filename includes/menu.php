@@ -6,7 +6,7 @@ $db = new dbClass();
 $user_gr = $_SESSION['GRPID'];
 ?>
 <div class="main-sidebar main-sidebar-hide main-sidebar-sticky side-menu ps">
-    <div class="sidemenu-logo"> <a class="main-logo" href="index.php"> <img src="assets/img/brand/logo.png" class="header-brand-img desktop-logo" alt="logo"> <img src="assets/img/brand/icon.png" class="header-brand-img icon-logo" alt="logo"> <img src="assets/img/brand/logo-light.png" class="header-brand-img desktop-logo theme-logo" alt="logo"> <img src="assets/img/brand/icon-light.png" class="header-brand-img icon-logo theme-logo" alt="logo"> </a> </div>
+    <!-- <div class="sidemenu-logo"> <a class="main-logo" href="index.php"> <img src="assets/img/brand/logo.png" class="header-brand-img desktop-logo" alt="logo"> <img src="assets/img/brand/icon.png" class="header-brand-img icon-logo" alt="logo"> <img src="assets/img/brand/logo-light.png" class="header-brand-img desktop-logo theme-logo" alt="logo"> <img src="assets/img/brand/icon-light.png" class="header-brand-img icon-logo theme-logo" alt="logo"> </a> </div> -->
     <div class="main-sidebar-body">
         <ul class="nav">
             <?php
@@ -32,7 +32,7 @@ $user_gr = $_SESSION['GRPID'];
                 foreach($menu['result'] AS $item){
                     if($item[url] == '#'){
                         $menu_li .= '<li class="nav-label">'.$item[name].'</li>';
-                        if($item['id'] == 15){
+                        /* if($item['id'] == 15){
                             $db->setQuery(" SELECT  `groups`.id, 
                                                             name,
                                                             IF(`groups`.id = 2, (SELECT COUNT(*) FROM lists_to_cut WHERE actived = 1 AND status_id = 3 AND DATE(finish_datetime) = CURDATE()), 
@@ -58,7 +58,7 @@ $user_gr = $_SESSION['GRPID'];
                             foreach($processes AS $group){
                                 $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page=processes&id='.$group['id'].'"><i class="fe fe-database"></i><span class="sidemenu-label" id="proccess_'.$group['id'].'">'.$group[name].' <span style="color: green;">('.$group[cc_finished].')</span> <span style="color: #95952a;">('.$group[cc_active].')</span> <span style="color: red;">('.$group[cc_queue].')</span> </span></a> </li>';
                             }
-                        }
+                        } */
                     }
                     else{
                         $menu_li .= '<li class="nav-item"> <a class="nav-link" href="index.php?page='.$item[url].'">'.$item[icon].'<span class="sidemenu-label">'.$item[name].'</span></a> </li>';
