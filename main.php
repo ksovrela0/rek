@@ -225,6 +225,51 @@
                                                 <div class="title_wrapper" data-user-id="'.$user['id'].'"></div>
                                             </div>
                                         </div>';
+
+
+
+                                /* for($j = 0; $j<19; $j++){
+
+                                    if($j < 10){
+                                        $jj = '0'.$j;
+                                    }
+                                    else{
+                                        $jj = $j;
+                                    }
+
+                                    $rand_start_hour = rand(9,10);
+
+                                    $rand_start_minute = rand(0,59);
+
+
+                                    if($rand_start_hour < 10){
+                                        $rand_start_hour = '0'.$rand_start_hour;
+                                    }
+
+                                    if($rand_start_minute < 10){
+                                        $rand_start_minute = '0'.$rand_start_minute;
+                                    }
+
+
+                                    $rand_end_hour = rand(18,19);
+
+                                    $rand_end_minute = rand(0,59);
+
+                                    if($rand_end_minute < 10){
+                                        $rand_end_minute = '0'.$rand_end_minute;
+                                    }
+
+                                    $db->setQuery("INSERT INTO tbl_facelog SET  userID = '$user[id]',
+                                                                                authDateTime = '2023-05-$jj $rand_start_hour:$rand_start_minute',
+                                                                                authDate = '2023-05-$jj'");
+                                    $db->execQuery();
+
+
+                                    $db->setQuery("INSERT INTO tbl_facelog SET  userID = '$user[id]',
+                                                                                authDateTime = '2023-05-$jj $rand_end_hour:$rand_end_minute',
+                                                                                authDate = '2023-05-$jj'");
+                                    $db->execQuery();
+                                } */
                             }
                         ?>
                         
@@ -311,7 +356,7 @@
                                                                                 <table>
                                                                                     <tr>
                                                                                         <td class="detailed_left_side">ნამუშევარი საათები</td>
-                                                                                        <td class="detailed_right_side">00:00</td>
+                                                                                        <td class="detailed_right_side total_worked_hours">00:00</td>
                                                                                     </tr>
                                                                                     <tr>
                                                                                         <td class="detailed_left_side">უქმე დღეებში ნამუშევარი საათები</td>
@@ -362,6 +407,8 @@
                                     $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.out').html(i.real_out)
                                     $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.work_hours').html(i.working_hours)
                                 });
+
+                                $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_worked_hours').html(data.working_hours_total);
                             //}
                         }
                     });

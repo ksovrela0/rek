@@ -35,6 +35,7 @@ switch ($act){
                                 tst.latecome,
                                 tst.earlygo,
                                 TIME_FORMAT(TIMEDIFF(MAX(tf.authDateTime) ,MIN(tf.authDateTime)), '%H:%i') as working_hours,
+                                TIMESTAMPDIFF(second, MIN(tf.authDateTime) ,MAX(tf.authDateTime)) as working_hours_seconds,
                                 tst.break
                                             
                                             
@@ -61,11 +62,31 @@ switch ($act){
                 
         $attendance = $db->getResultArray()['result'];
 
+        $total_worked_time = 0;
+
+        foreach($attendance AS $times){
+            $total_worked_time += $times['working_hours_seconds'];
+        }
+
 
         $data['result'] = $attendance;
+
+
+        $data['working_hours_total'] = calculate_hours($total_worked_time);
         break;
 }
 
 echo json_encode($data);
+
+function calculate_hours($seconds = 0){// Example: 100,000 seconds
+
+    $totalHours = floor($seconds / 3600);
+    $remainingSeconds = $seconds % 3600;
+    $minutes = floor($remainingSeconds / 60);
+
+    $timeFormat = sprintf('%02d:%02d', $totalHours, $minutes);
+
+    return $timeFormat;
+}
 
 ?>
