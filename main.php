@@ -397,7 +397,7 @@
                                                                                     </tr>
                                                                                     <tr>
                                                                                         <td class="detailed_left_side">დამატებითი საათები</td>
-                                                                                        <td class="detailed_right_side">00:00</td>
+                                                                                        <td class="detailed_right_side total_additional_worked_hours">00:00</td>
                                                                                     </tr>
                                                                                     <tr>
                                                                                         <td class="detailed_left_side">დაგვიანებული დღეები</td>
@@ -478,7 +478,9 @@
                                 $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_worked_hours').html(data.working_hours_total);
                                 $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_worked_nonwork_hours').html(data.total_worked_nonwork_hours);
                                 $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_lated_hours').html(data.total_lated_hours);
+                                $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_additional_worked_hours').html(data.total_additional_worked_hours);
                                 $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_lated_days').html(data.total_lated_days+' დღე');
+                                
                             //}
                         }
                     });

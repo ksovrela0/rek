@@ -31,7 +31,7 @@ switch ($act){
                                 DATE_FORMAT(MAX(tf.authDateTime),'%H:%i') as real_out,
                                 TIME_FORMAT(ADDTIME(tst.plan_in, '00:15'), '%H:%i') AS plan_in,
                                 tst.plan_out,
-                                tst.working_minutes,
+                                tst.working_minutes * 60 AS working_seconds,
                                 tst.check_in,
                                 tst.check_out,
                                 tst.check_wm,
@@ -83,7 +83,7 @@ switch ($act){
         $total_worked_time = 0;
         $total_worked_nonwork_time = 0;
         $total_lated_time = 0;
-
+        $total_additional_worked_time = 0;
         $total_lated_days = 0;
 
         foreach($attendance AS $times){
@@ -102,6 +102,24 @@ switch ($act){
                 $total_lated_days++;
             }
 
+            if($times['real_out'] < $times['plan_out']){
+                $start_time = strtotime($times['plan_out'].':00');
+                $end_time = strtotime($times['real_out'].':00');
+
+                $total_lated_time += $start_time - $end_time;
+            }
+
+
+            $real_in = strtotime($times['real_in'].':00');
+            $real_out = strtotime($times['real_out'].':00');
+
+            $check_additional_worked = $real_out - $real_in;
+
+            if($check_additional_worked > $times['working_seconds']){
+                $total_additional_worked_time += $check_additional_worked - $times['working_seconds'];
+            }
+
+
 
         }
 
@@ -117,6 +135,7 @@ switch ($act){
         $data['working_hours_total'] = calculate_hours($total_worked_time);
         $data['total_worked_nonwork_hours'] = calculate_hours($total_worked_nonwork_time);
         $data['total_lated_hours'] = calculate_hours($total_lated_time);
+        $data['total_additional_worked_hours'] = calculate_hours($total_additional_worked_time);
         $data['total_lated_days'] = $total_lated_days;
         break;
 }
