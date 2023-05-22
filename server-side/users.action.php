@@ -172,7 +172,7 @@ switch ($act){
                                     IF(users.social = 1, 'კი', 'არა')
                                     
                             FROM users
-                            JOIN `groups` ON `groups`.id = users.group_id $where
+                            JOIN `groups` ON `groups`.id = users.group_id
                             WHERE users.actived = 1");
 
         $result = $db->getKendoList($columnCount, $cols);
