@@ -14,6 +14,8 @@ switch ($act){
         $month = '05';
         $year = 2023;
 
+        $holi_dates = array();
+
         $targetMonth = $year.'-'.$month;
 
         $filteredDate = date("Y-m", strtotime($targetMonth));
@@ -24,9 +26,10 @@ switch ($act){
                                 p.tbl_schedule_type_id as schedule_type,
                                 tst.name as schedule_name,
                                 DAY(tf.authDate) as day, 
+                                tf.authDate,
                                 DATE_FORMAT(MIN(tf.authDateTime),'%H:%i') as real_in,
                                 DATE_FORMAT(MAX(tf.authDateTime),'%H:%i') as real_out,
-                                tst.plan_in,
+                                TIME_FORMAT(ADDTIME(tst.plan_in, '00:15'), '%H:%i') AS plan_in,
                                 tst.plan_out,
                                 tst.working_minutes,
                                 tst.check_in,
@@ -62,17 +65,59 @@ switch ($act){
                 
         $attendance = $db->getResultArray()['result'];
 
+        $db->setQuery(" SELECT 
+                            *,
+                            DAY(tarigi) AS day_of_month
+                        FROM 
+                            holidays
+                        WHERE 
+                            tarigi >= '".$filteredDate."-01'  AND 
+                            tarigi <= '".$lastDate."'");
+        $holidays = $db->getResultArray();
+
+
+        foreach($holidays['result'] AS $holiday){
+            array_push($holi_dates, $holiday['tarigi']);
+        }
+        //var_dump($holi_dates);
         $total_worked_time = 0;
+        $total_worked_nonwork_time = 0;
+        $total_lated_time = 0;
+
+        $total_lated_days = 0;
 
         foreach($attendance AS $times){
             $total_worked_time += $times['working_hours_seconds'];
+
+            if(date("l", strtotime($times['authDate'])) == 'Saturday' || date("l", strtotime($times['authDate'])) == 'sunday' || in_array($times['authDate'], $holi_dates)){
+                $total_worked_nonwork_time += $times['working_hours_seconds'];
+            }
+
+            if($times['real_in'] > $times['plan_in']){
+                $start_time = strtotime($times['plan_in'].':00');
+                $end_time = strtotime($times['real_in'].':00');
+
+                $total_lated_time += $end_time - $start_time;
+
+                $total_lated_days++;
+            }
+
+
         }
 
 
         $data['result'] = $attendance;
 
 
+        
+        $data['holidays'] = $holidays['result'];
+
+
+
         $data['working_hours_total'] = calculate_hours($total_worked_time);
+        $data['total_worked_nonwork_hours'] = calculate_hours($total_worked_nonwork_time);
+        $data['total_lated_hours'] = calculate_hours($total_lated_time);
+        $data['total_lated_days'] = $total_lated_days;
         break;
 }
 

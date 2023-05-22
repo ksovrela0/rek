@@ -31,7 +31,7 @@
         .calendar .day {
             position: relative;
             width: 160px;
-            height: 110px;
+            height: 130px;
             text-align: left;
             border-left: 1px solid #691e94;
             border-bottom: 1px solid #691e94;
@@ -48,7 +48,7 @@
             font-weight: bold;
         }
         .title_red{
-            color: red;
+            color: red!important;
         }
         .title_wrapper{
             display: flex;
@@ -65,6 +65,7 @@
         }
         .day_data td{
             padding-left: 5px;
+            text-align: center;
             
         }
         .day_data_title{
@@ -157,6 +158,10 @@
         .detailed_right_side{
             padding-left: 5px;
             
+        }
+        .holiday_title{
+            font-size: 10px;
+            font-weight: bold;
         }
       </style>
    </head>
@@ -327,11 +332,32 @@
                 
                 // Добавляем дни месяца
                 for (var i = 1; i <= daysInMonth; i++) {
-                    let day_container = `   <span>
+                    let day;
+                    let day_container = '';
+
+
+
+                    if(i<10){
+                        day = year+'-'+month+"-0"+i;
+                    }
+                    else{
+                        day = year+'-'+month+'-'+i;
+                    }
+
+
+
+                    
+
+                    let date_check = new Date(day)
+                    if(date_check.getDay() == 0 || date_check.getDay() == 6){
+                        day_container += `<span class="day_day title_red">`+i+`</span>`;
+                    }
+                    else{
+                        day_container = `   <span>
                                                 <table class="day_data" cellspacing="2">
                                                     <tr>
                                                         <td class="day_data_title">მოსვლა</td>
-                                                        <td rowspan="3" class="day_data_hours in total_red">არ მოსულა</td>
+                                                        <td rowspan="3" class="day_data_hours in total_red">არ მოვიდა</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="day_data_title">წასვლა</td>
@@ -343,8 +369,11 @@
                                                     </tr>
                                                 </table>
                                             </span>`;
+                        day_container += `<span class="day_day">`+i+`</span>`;
+                    }
+                    
                                             
-                    day_container += `<span class="day_day">`+i+`</span>`;
+                    
                     
                     calendar.append($('<div>').addClass('day').attr('day',i).append(day_container));
                 }
@@ -360,19 +389,19 @@
                                                                                     </tr>
                                                                                     <tr>
                                                                                         <td class="detailed_left_side">უქმე დღეებში ნამუშევარი საათები</td>
-                                                                                        <td class="detailed_right_side">00:00</td>
+                                                                                        <td class="detailed_right_side total_worked_nonwork_hours">00:00</td>
                                                                                     </tr>
                                                                                     <tr>
                                                                                         <td class="detailed_left_side">გაცდენილი საათები</td>
-                                                                                        <td class="detailed_right_side">00:00</td>
+                                                                                        <td class="detailed_right_side total_lated_hours">00:00</td>
                                                                                     </tr>
                                                                                     <tr>
                                                                                         <td class="detailed_left_side">დამატებითი საათები</td>
                                                                                         <td class="detailed_right_side">00:00</td>
                                                                                     </tr>
                                                                                     <tr>
-                                                                                        <td class="detailed_left_side">დაგვიანებული საათები</td>
-                                                                                        <td class="detailed_right_side">00:00</td>
+                                                                                        <td class="detailed_left_side">დაგვიანებული დღეები</td>
+                                                                                        <td class="detailed_right_side total_lated_days">0 დღე</td>
                                                                                     </tr>
                                                                                 </table>
                                                                             </div>`);
@@ -398,9 +427,47 @@
                                 var year = 2023;
                                 createCalendar(month, year, user_id);
 
-                                let tabel_data = data.result;
+                                let holidays = data.holidays;
+                                holidays.forEach(function(i, x){
+                                    $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day_of_month+'"] .day_day').css('color', 'red').append(`<span class="holiday_title"> `+i.name+`</span>`)
+                                })
 
+
+                                let tabel_data = data.result;
                                 tabel_data.forEach(function(i,x){
+                                    let day;
+                                    if(i.day<10){
+                                        day = year+'-'+month+"-0"+i.day;
+                                    }
+                                    else{
+                                        day = year+'-'+month+'-'+i.day;
+                                    }
+
+
+
+                                    
+
+                                    let date_check = new Date(day)
+                                    if(date_check.getDay() == 0 || date_check.getDay() == 6){
+                                        $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"]').append(`  <span>
+                                                                                                                                <table class="day_data" cellspacing="2">
+                                                                                                                                    <tr>
+                                                                                                                                        <td class="day_data_title">მოსვლა</td>
+                                                                                                                                        <td rowspan="3" class="day_data_hours in total_red">არ მოსულა</td>
+                                                                                                                                    </tr>
+                                                                                                                                    <tr>
+                                                                                                                                        <td class="day_data_title">წასვლა</td>
+                                                                                                                                        <td class="day_data_hours out"></td>
+                                                                                                                                    </tr>
+                                                                                                                                    <tr>
+                                                                                                                                        <td class="day_data_title">ნამუშევარი</td>
+                                                                                                                                        <td class="day_data_hours work_hours"></td>
+                                                                                                                                    </tr>
+                                                                                                                                </table>
+                                                                                                                            </span>`)
+                                    }
+
+
                                     $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.in').removeAttr('rowspan').removeClass('total_red');
 
                                     $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.in').html(i.real_in)
@@ -409,6 +476,9 @@
                                 });
 
                                 $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_worked_hours').html(data.working_hours_total);
+                                $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_worked_nonwork_hours').html(data.total_worked_nonwork_hours);
+                                $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_lated_hours').html(data.total_lated_hours);
+                                $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_lated_days').html(data.total_lated_days+' დღე');
                             //}
                         }
                     });
