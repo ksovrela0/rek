@@ -160,11 +160,17 @@ switch ($act){
         if($user_gr == 11){
             $where = "AND `groups`.id NOT IN (1,10,11,12,13,14,15)";
         }
-            $db->setQuery("SELECT users.id,
+            $db->setQuery("SELECT   users.id,
+                                    `groups`.name,
                                     CONCAT(users.firstname,' ', users.lastname),
-                                    users.phone,
+                                    users.position,
                                     users.pid,
-                                    `groups`.name
+                                    users.phone,
+                                    users.birth_date,
+                                    users.address,
+                                    IF(users.pension = 1, 'კი', 'არა'),
+                                    IF(users.social = 1, 'კი', 'არა')
+                                    
                             FROM users
                             JOIN `groups` ON `groups`.id = users.group_id $where
                             WHERE users.actived = 1");

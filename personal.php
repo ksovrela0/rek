@@ -18,7 +18,7 @@
 	<!-- Favicon -->
 	<!-- <link rel="icon" href="assets/img/brand/logo.png" type="image/x-icon"> -->
 	<!-- Title -->
-	<title>ტაბელი</title>
+	<title>თანამშრომლები</title>
 	<!---Fontawesome css-->
 	<?php include('includes/functions.php'); ?>
 	<script type="text/javascript">
@@ -435,27 +435,41 @@
 		var actions         = 	'<div class="btn btn-list"><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> წაშლა</a></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
-		var columnsCount    =	5;
+		var columnsCount    =	11;
 		var columnsSQL      = 	[
 									"id:string",
+                                    "group:string",
 									"fullname:string",
-									"phone:string",
-									"pid:string",
-									"group:string"
+                                    "position:string",
+                                    "pid:string",
+                                    "phone:string",
+                                    
+                                    "birth_date:string",
+                                    "address:string",
+                                    "pension:string",
+                                    "social:string",
+                                    "photo:string",
+									
 								];
 		var columnGeoNames  = 	[
 									"ID", 
+                                    "ჯგუფი",
 									"სახელი/გვარი",
+                                    "პოზიცია",
+                                    "პ/ნ",
 									"ტელეფონი",
-									"პ/ნ",
-									"ჯგუფი"
+                                    "დაბადების თარიღი",
+									"მისამართი",
+                                    "საპენსიო",
+                                    "სოციალური",
+									"სურათი"
 								];
 
-		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0]; 
-		var selectors               =   [0,0,0,0,0,0,0,0,0,0]; 
+		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0,0,0,0,0]; 
+		var selectors               =   [0,0,0,0,0,0,0,0,0,0,0,0,0,0]; 
 
-		var locked                  =   [0,0,0,0,0,0,0,0,0,0];
-		var lockable                =   [0,0,0,0,0,0,0,0,0,0];
+		var locked                  =   [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+		var lockable                =   [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 		var filtersCustomOperators = '{"date":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}, "number":{"start":"-დან","ends":"-მდე","eq":"ზუსტი"}}';
 		//KendoUI CLASS CONFIGS END
