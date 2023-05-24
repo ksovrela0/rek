@@ -169,7 +169,7 @@
    <body>
       
       <?php include('includes/switcher.php'); ?>
-      <!-- End Switcher --> <!-- Loader --> 
+      <!-- End Switchessr --> <!-- Loader --> 
       <div id="global-loader" style="display: none;"> <img src="assets/img/loader.svg" class="loader-img" alt="Loader"> </div>
       <!-- End Loader --> <!-- Page --> 
       <div class="page">
