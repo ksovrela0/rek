@@ -164,6 +164,13 @@
             font-size: 10px;
             font-weight: bold;
         }
+        .tabel_filter{
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
       </style>
    </head>
    <body>
@@ -195,6 +202,32 @@
                
                <!--End Navbar --> <!-- Row --> 
                 <div class="row row-sm">
+                    <div class="col-sm-2">
+						<label>აირჩიეთ ჯგუფი</label>
+						<select id="user_group" style="width:95%;">
+							<?php getUserGroups(0); ?>
+						</select>
+					</div>
+
+                    <div class="col-sm-2">
+						<label>გვარი</label>
+						<input data-nec="0" style="width: 95%;height: 20px;font-size: 16px; margin-bottom: 10px;padding: 6px;" type="text" id="user_lastname" class="idle form-input" autocomplete="off">
+					</div>
+
+                    <div class="col-sm-2">
+						<label>აირჩიეთ წელი</label>
+						<select style="width:95%;" id="tabel_year">
+							<?php getYears(date('Y')); ?>
+						</select>
+					</div>
+                    <div class="col-sm-2">
+						<label>აირჩიეთ თვე</label>
+						<select style="width:95%;" id="tabel_month">
+							<?php getMonth(date('m')); ?>
+						</select>
+					</div>
+
+                    <br><br><br>
                     <div class="users_container">
                         <div class="users_head">
                             <div>სახელი</div>
@@ -216,7 +249,7 @@
 
                             foreach($users['result'] AS $user){
                                 echo '  <div class="user_wrapper">
-                                            <div class="user_div" data-user-id="'.$user['id'].'">
+                                            <div class="user_div" data-user-id="'.$user['id'].'" data-user-group="'.$user['group_id'].'" data-user-lastname="'.$user['lastname'].'">
                                                 
                                                 <div class="user_firstname"><span class="triangle"></span>'.$user['firstname'].'</div>
                                                 <div class="user_lastname">'.$user['lastname'].'</div>
@@ -378,8 +411,21 @@
                     
                     calendar.append($('<div>').addClass('day').attr('day',i).append(day_container));
                 }
-                
+                $('.calendarContainer[data-user-id="'+data_id+'"]').prepend(`   <div class="tabel_filter">
+                                                                                    <div style="display: flex;">
+                                                                                        <select style="width: 95px;" class="tabel_year_o">
+                                                                                        `+$('#tabel_year').html()+`
+                                                                                        </select>
+
+                                                                                    <div style="display: flex;">
+                                                                                        <select class="tabel_month_o">
+                                                                                        `+$('#tabel_month').html()+`
+                                                                                        </select>
+                                                                                    </div>
+                                                                                </div>`);
                 $('.calendarContainer[data-user-id="'+data_id+'"]').append(calendar);
+                $('.calendarContainer[data-user-id="'+data_id+'"] .tabel_year_o').val($('#tabel_year').val())
+                $('.calendarContainer[data-user-id="'+data_id+'"] .tabel_month_o').val($('#tabel_month').val())
 
 
                 $('.calendarContainer[data-user-id="'+data_id+'"]').append(`<div class="detailed_info">
@@ -408,6 +454,48 @@
                                                                             </div>`);
             }
 
+            $(document).on('change','#user_group,#tabel_year,#tabel_month', function(){
+                let group = $('#user_group').val();
+                $('#user_lastname').val('')
+                $('.calendarContainer').removeClass('tabel_showed')
+                $('.triangle').removeClass('rotated')
+
+                $('.calendarContainer').find('.calendar').remove();
+                $('.calendarContainer').find('.detailed_info').remove();
+
+                $(".user_div").parent().css('display', 'none');
+                if(group != ''){
+                    $(".user_div[data-user-group='"+group+"']").parent().css('display', 'block');
+                }
+                else{
+                    $(".user_div").parent().css('display', 'block');
+                }
+
+            })
+
+            $(document).on('keyup', '#user_lastname', function(){
+                let group = $('#user_group').val();
+                let lastname = $('#user_lastname').val();
+                $(".user_div").parent().css('display', 'none');
+                $('.calendarContainer').removeClass('tabel_showed')
+                $('.triangle').removeClass('rotated')
+
+                $('.calendarContainer').find('.calendar').remove();
+                $('.calendarContainer').find('.detailed_info').remove();
+                let filter ='';
+                if(group != ''){
+                    filter += "[data-user-group='"+group+"']";
+                }
+
+
+                if(lastname != ''){
+                    
+                    $(".user_div[data-user-lastname*='"+lastname+"']"+filter+"").parent().css('display', 'block');
+                }
+                else{
+                    $(".user_div").parent().css('display', 'block');
+                }
+            })
 
             $(document).on('click', '.user_div', function(){
 
@@ -500,3 +588,67 @@
       <div class="main-navbar-backdrop"></div>
    </body>
 </html>
+
+<?php
+function getUserGroups($id){
+    GLOBAL $db;
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    groups
+                    WHERE actived = 1 AND id != 1");
+    $cats = $db->getResultArray();
+	$data .= '<option value="">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+    }
+    echo $data;
+}
+
+function getYears($year){
+    $start = 2021;
+    $data = '';
+    for(;$start<=2025;$start++){
+        if($year == $start){
+            $data .= '<option value="'.$start.'" selected="selected">'.$start.'</option>';
+        }
+        else{
+            $data .= '<option value="'.$start.'">'.$start.'</option>';
+        }
+    }
+
+    echo $data;
+}
+
+function getMonth($month){
+    $data = '';
+    $months = array(1 => 'იანვარი',
+                    2 => 'თებერვალი',
+                    3 => 'მარტი',
+                    4 => 'აპრილი',
+                    5 => 'მაისი',
+                    6 => 'ივნისი',
+                    7 => 'ივლისი',
+                    8 => 'აგვისტო',
+                    9 => 'სექტემბერი',
+                    10 => 'ოქტომბერი',
+                    11 => 'ნოემბერი',
+                    12 => 'დეკემბერი');
+
+    foreach($months AS $key=>$value){
+        if($key == $month){
+            $data .= '<option value="'.$key.'" selected="selected">'.$value.'</option>';
+        }
+        else{
+            $data .= '<option value="'.$key.'">'.$value.'</option>';
+        }
+    }
+
+    echo $data;
+}
+?>
