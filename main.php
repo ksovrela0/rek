@@ -25,7 +25,7 @@
         .calendar {
             display: flex;
             flex-wrap: wrap;
-            width: 1260px;
+            width: 1260px;;
         }
         
         .calendar .day {
@@ -94,7 +94,7 @@
             padding: 0!important;
             display: flex;
             flex-direction: row;
-            width: 1260px;
+            width: 100%;
             justify-content: space-between;
             font-weight: bold;
             font-size: 17px;
@@ -124,7 +124,7 @@
             padding: 0!important;
             display: flex;
             flex-direction: row;
-            width: 1260px;
+            width: 100%;
             justify-content: space-around;
             font-weight: bold;
             font-size: 17px;
@@ -140,6 +140,7 @@
         .users_container{
             border: 2px solid #691e94;
             padding: 0!important;
+            width: 100%;
         }
         .total_red{
             background-color: red;
