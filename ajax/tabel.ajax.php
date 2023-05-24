@@ -10,9 +10,11 @@ $data = array();
 switch ($act){
     case 'get_tabel_data':
         $person_id = $_REQUEST['user_id'];
+        $year = $_REQUEST['year'];
+        $month = $_REQUEST['month'];
 
-        $month = '05';
-        $year = 2023;
+        $month = $month;
+        $year = $year;
 
         $holi_dates = array();
 

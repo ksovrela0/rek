@@ -344,7 +344,7 @@
       <!-- End Page --> <!-- Back-to-top --> <a href="#top" id="back-to-top"><i class="fe fe-arrow-up"></i></a> <!-- Jquery js--> 
         <script>
             
-            function createCalendar(month, year, data_id) {
+            function createCalendar(month, year, data_id, second_call = 0) {
                 var daysInMonth = new Date(year, month, 0).getDate();
                 var firstDay = new Date(year, month - 1, 1).getDay();
                 var startDay = (firstDay === 0) ? 6 : firstDay - 1; // Коррекция для начала недели с понедельника
@@ -417,21 +417,26 @@
                     
                     calendar.append($('<div>').addClass('day').attr('day',i).append(day_container));
                 }
-                $('.calendarContainer[data-user-id="'+data_id+'"]').prepend(`   <div class="tabel_filter">
+                
+                $('.calendarContainer[data-user-id="'+data_id+'"]').append(calendar);
+
+                if(second_call == 0){
+                    $('.calendarContainer[data-user-id="'+data_id+'"]').prepend(`   <div class="tabel_filter">
                                                                                     <div style="display: flex;">
                                                                                         <select style="width: 95px;" class="tabel_year_o">
                                                                                         `+$('#tabel_year').html()+`
                                                                                         </select>
-
+                                                                                    </div>
                                                                                     <div style="display: flex;">
                                                                                         <select class="tabel_month_o">
                                                                                         `+$('#tabel_month').html()+`
                                                                                         </select>
                                                                                     </div>
                                                                                 </div>`);
-                $('.calendarContainer[data-user-id="'+data_id+'"]').append(calendar);
-                $('.calendarContainer[data-user-id="'+data_id+'"] .tabel_year_o').val($('#tabel_year').val())
-                $('.calendarContainer[data-user-id="'+data_id+'"] .tabel_month_o').val($('#tabel_month').val())
+                    $('.calendarContainer[data-user-id="'+data_id+'"] .tabel_year_o').val($('#tabel_year').val())
+                    $('.calendarContainer[data-user-id="'+data_id+'"] .tabel_month_o').val($('#tabel_month').val())
+                }
+                
 
 
                 $('.calendarContainer[data-user-id="'+data_id+'"]').append(`<div class="detailed_info">
@@ -459,7 +464,87 @@
                                                                                 </table>
                                                                             </div>`);
             }
-            /* $(document).on('change') */
+            $(document).on('change','.tabel_year_o, .tabel_month_o', function(){
+                let user_id = $(this).parent().parent().parent().attr('data-user-id');
+                let year = $('.tabel_year_o').val();
+                let month = $('.tabel_month_o').val();
+                if(month < 10){
+                    month = '0'+month;
+                }
+                $('.calendarContainer').find('.calendar').remove();
+                $('.calendarContainer').find('.title_wrapper').html('');
+                $('.calendarContainer').find('.detailed_info').remove();
+
+                $.ajax({
+                        url: "ajax/tabel.ajax.php",
+                        type: "POST",
+                        data: "act=get_tabel_data&user_id="+user_id+"&year="+year+"&month="+month,
+                        dataType: "json",
+                        success: function (data) {
+                            //if(typeof data != 'undefined'){
+                                createCalendar(month, year, user_id, 1);
+
+                                let holidays = data.holidays;
+                                holidays.forEach(function(i, x){
+                                    $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day_of_month+'"] .day_day').css('color', 'red').append(`<span class="holiday_title"> `+i.name+`</span>`)
+                                })
+
+
+                                let tabel_data = data.result;
+                                tabel_data.forEach(function(i,x){
+                                    let day;
+                                    if(i.day<10){
+                                        day = year+'-'+month+"-0"+i.day;
+                                    }
+                                    else{
+                                        day = year+'-'+month+'-'+i.day;
+                                    }
+
+
+
+                                    
+
+                                    let date_check = new Date(day)
+                                    if(date_check.getDay() == 0 || date_check.getDay() == 6){
+                                        $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"]').append(`  <span>
+                                                                                                                                <table class="day_data" cellspacing="2">
+                                                                                                                                    <tr>
+                                                                                                                                        <td class="day_data_title">მოსვლა</td>
+                                                                                                                                        <td rowspan="3" class="day_data_hours in total_red">არ მოსულა</td>
+                                                                                                                                    </tr>
+                                                                                                                                    <tr>
+                                                                                                                                        <td class="day_data_title">წასვლა</td>
+                                                                                                                                        <td class="day_data_hours out"></td>
+                                                                                                                                    </tr>
+                                                                                                                                    <tr>
+                                                                                                                                        <td class="day_data_title">ნამუშევარი</td>
+                                                                                                                                        <td class="day_data_hours work_hours"></td>
+                                                                                                                                    </tr>
+                                                                                                                                </table>
+                                                                                                                            </span>`)
+                                    }
+
+
+                                    $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.in').removeAttr('rowspan').removeClass('total_red');
+
+                                    $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.in').html(i.real_in)
+                                    $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.out').html(i.real_out)
+                                    $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.work_hours').html(i.working_hours)
+                                });
+
+                                $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_worked_hours').html(data.working_hours_total);
+                                $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_worked_nonwork_hours').html(data.total_worked_nonwork_hours);
+                                $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_lated_hours').html(data.total_lated_hours);
+                                $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_additional_worked_hours').html(data.total_additional_worked_hours);
+                                $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_lated_days').html(data.total_lated_days+' დღე');
+                                
+                            //}
+                        }
+                    });
+
+
+                
+            });
 
             $(document).on('change','#user_group,#tabel_year,#tabel_month', function(){
                 let group = $('#user_group').val();
@@ -468,6 +553,7 @@
                 $('.triangle').removeClass('rotated')
 
                 $('.calendarContainer').find('.calendar').remove();
+                $('.calendarContainer').find('.tabel_filter').remove();
                 $('.calendarContainer').find('.detailed_info').remove();
 
                 $(".user_div").parent().css('display', 'none');
@@ -488,6 +574,7 @@
                 $('.triangle').removeClass('rotated')
 
                 $('.calendarContainer').find('.calendar').remove();
+                $('.calendarContainer').find('.tabel_filter').remove();
                 $('.calendarContainer').find('.detailed_info').remove();
                 let filter ='';
                 if(group != ''){
@@ -512,15 +599,19 @@
 
                 $('.calendarContainer[data-user-id="'+user_id+'"]').toggleClass('tabel_showed');
                 if($('.calendarContainer[data-user-id="'+user_id+'"]').hasClass('tabel_showed')){
+                    let year = $('#tabel_year').val();
+                    let month = $('#tabel_month').val();
+
+                    if(month < 10){
+                        month = '0'+month;
+                    }
                     $.ajax({
                         url: "ajax/tabel.ajax.php",
                         type: "POST",
-                        data: "act=get_tabel_data&user_id="+user_id,
+                        data: "act=get_tabel_data&user_id="+user_id+"&year="+year+"&month="+month,
                         dataType: "json",
                         success: function (data) {
                             //if(typeof data != 'undefined'){
-                                var month = 5; // Май
-                                var year = 2023;
                                 createCalendar(month, year, user_id);
 
                                 let holidays = data.holidays;
