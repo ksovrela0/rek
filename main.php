@@ -595,7 +595,7 @@ function getUserGroups($id){
     $data = '';
     $db->setQuery("SELECT   id,
                             name AS 'name'
-                    FROM    groups
+                    FROM    `groups`
                     WHERE actived = 1 AND id != 1");
     $cats = $db->getResultArray();
 	$data .= '<option value="">აირჩიეთ</option>';
