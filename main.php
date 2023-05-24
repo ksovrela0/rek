@@ -129,6 +129,8 @@
             font-weight: bold;
             font-size: 17px;
             margin-bottom: 15px;
+            position: sticky;
+            top: 65px;
         }
         .users_head div{
             display: flex;
