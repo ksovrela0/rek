@@ -54,6 +54,9 @@
             display: flex;
             background-color: #691e94;
             color: #fff;
+            position: sticky;
+            top: 63px;
+            z-index: 99999999;
         }
         .day_day{
             position: absolute;
@@ -131,6 +134,7 @@
             margin-bottom: 15px;
             position: sticky;
             top: 65px;
+            z-index: 99999998;
         }
         .users_head div{
             display: flex;
@@ -455,6 +459,7 @@
                                                                                 </table>
                                                                             </div>`);
             }
+            /* $(document).on('change') */
 
             $(document).on('change','#user_group,#tabel_year,#tabel_month', function(){
                 let group = $('#user_group').val();
