@@ -18,7 +18,7 @@
 	<!-- Favicon -->
 	<!-- <link rel="icon" href="assets/img/brand/logo.png" type="image/x-icon"> -->
 	<!-- Title -->
-	<title>რეპორტი - ადმინისტრაცია</title>
+	<title>რეპორტი - ტაბელის საერთო რეპორტი</title>
 	<!---Fontawesome css-->
 	<?php include('includes/functions.php'); ?>
 	<script type="text/javascript">
@@ -188,10 +188,10 @@
 				<!-- Page Header -->
 				<div class="page-header">
 					<div>
-						<h2 class="main-content-title tx-24 mg-b-5">რეპორტი ადმინისტრაცია</h2>
+						<h2 class="main-content-title tx-24 mg-b-5">ტაბელის საერთო რეპორტი</h2>
 						<ol class="breadcrumb">
 							<li class="breadcrumb-item"><a href="#">პერსონალი</a></li>
-							<li class="breadcrumb-item active" aria-current="page">რეპორტი ადმინისტრაცია</li>
+							<li class="breadcrumb-item active" aria-current="page">ტაბელის საერთო რეპორტი</li>
 						</ol>
 					</div>
 				</div>
@@ -201,12 +201,39 @@
                     <div class="col-md-2">
                         <label>აირჩიეთ პერიოდი</label>
                         <input data-nec="0" style="    width: 95%;
-    height: 38px;
-    font-size: 19px;
-    margin-bottom: 10px;
-    border-radius: 14px;
-    padding: 6px;" type="text" id="report_date" class="idle form-input" autocomplete="off">
+							height: 28px;
+							font-size: 16px;
+							margin-bottom: 10px;
+							border-radius: 14px;
+							padding: 6px;" type="text" id="report_date" class="idle form-input" autocomplete="off">
                     </div>
+					<div class="col-md-2">
+						<label>აირჩიეთ ჯგუფი</label>
+						<select id="user_group" style="width:95%;">
+							<?php getUserGroups(0); ?>
+						</select>
+					</div>
+					<?php
+						function getUserGroups($id){
+							GLOBAL $db;
+							$data = '';
+							$db->setQuery("SELECT   id,
+													name AS 'name'
+											FROM    `groups`
+											WHERE actived = 1 AND id != 1");
+							$cats = $db->getResultArray();
+							$data .= '<option value="">აირჩიეთ</option>';
+							foreach($cats['result'] AS $cat){
+								if($cat[id] == $id){
+									$data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+								}
+								else{
+									$data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+								}
+							}
+							echo $data;
+						}
+					?>
 					<div id="users"></div>
 				</div>
 				<!-- End Row -->
@@ -404,8 +431,8 @@
 	});
 
     $(document).on('change', '#report_date', function(){
-        let report_date = '&report_date='+$("#report_date").val();
-
+        let report_date = '&report_date='+$("#report_date").val()+'&group_id='+$("#user_group").val();
+		
 
 		LoadKendoTable_incomming(report_date);
     })
@@ -459,7 +486,7 @@
 		//KendoUI CLASS CONFIGS BEGIN
 		var aJaxURL	        =   "server-side/users.action.php";
 		var gridName        = 	'users';
-		var actions         = 	'<div class="btn btn-list"><a id="export_excel" style="color:white;" class="btn ripple btn-primary"> EXCEL EXPORT</a></div>';
+		var actions         = 	'<div class="btn btn-list"><a id="export_excel" style="color:white;" class="btn ripple btn-primary">მონაცემთა რეპორტი</a></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
 		var columnsCount    =	17;
@@ -499,11 +526,11 @@
                                     "საპენსიო",
                                     "სოციალური",
 									"სურათი",
-                                    "ნამ.საათები",
-                                    "უქ.ნამ.საათები",
-                                    "დამ.საათები",
-                                    "გაცდ.საათები",
-                                    "დაგვ.დღეები"
+                                    "ნამუშევარი საათები",
+                                    "უქმეებშ ნამუშევარი საათები",
+                                    "დამატებითი საათები",
+                                    "გაცდენილი საათები",
+                                    "დაგვიანებული დღეები"
 								];
 
 		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; 
@@ -519,6 +546,12 @@
 		kendo.loadKendoUI(aJaxURL,'get_list_admins',itemPerPage,columnsCount,columnsSQL,gridName,actions,editType,columnGeoNames,filtersCustomOperators,showOperatorsByColumns,selectors,hidden, 1, locked, lockable);
 
 	}
+	$(document).on('change', '#user_group', function(){
+		let report_date = '&report_date='+$("#report_date").val()+'&group_id='+$("#user_group").val();
+		
+
+		LoadKendoTable_incomming(report_date);
+	})
     $(document).on('click', '#export_excel', function(){
         window.open('export.php?act=admin_export&report_date='+$("#report_date").val(), '_blank').focus();
     })
