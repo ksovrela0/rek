@@ -82,6 +82,7 @@
             color: #fff;
             padding-left: 5px;
             padding-right: 5px;
+            width: 100%;
         }
         .calendarContainer{
             background-color: #b4b4b4;
@@ -176,6 +177,12 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 10px;
+        }
+        .total_red.work_hours{
+            display: none;
+        }
+        .total_red.out{
+            display: none;
         }
       </style>
    </head>
@@ -401,11 +408,11 @@
                                                     </tr>
                                                     <tr>
                                                         <td class="day_data_title">წასვლა</td>
-                                                        <td class="day_data_hours out"></td>
+                                                        <td class="day_data_hours out total_red"></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="day_data_title">ნამუშევარი</td>
-                                                        <td class="day_data_hours work_hours"></td>
+                                                        <td class="day_data_hours work_hours total_red"></td>
                                                     </tr>
                                                 </table>
                                             </span>`;
@@ -526,6 +533,8 @@
 
 
                                     $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.in').removeAttr('rowspan').removeClass('total_red');
+                                    $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.out').removeClass('total_red');
+                                    $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.work_hours').removeClass('total_red');
 
                                     $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.in').html(i.real_in)
                                     $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.out').html(i.real_out)
@@ -656,7 +665,9 @@
 
 
                                     $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.in').removeAttr('rowspan').removeClass('total_red');
-
+                                    $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.out').removeClass('total_red');
+                                    $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.work_hours').removeClass('total_red');
+                                    
                                     $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.in').html(i.real_in)
                                     $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.out').html(i.real_out)
                                     $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] td.work_hours').html(i.working_hours)
