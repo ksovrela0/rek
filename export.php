@@ -10,8 +10,13 @@ $user_gr = $_SESSION['GRPID'];
 switch ($act){
     case 'admin_export':
         $report_date = explode(' - ', $_REQUEST['report_date']);
+        $group_id = $_REQUEST['group_id'];
         $date_start = $report_date[0];
         $date_end = $report_date[1];
+        $where = '';
+        if($group_id != ''){
+            $where = " AND users.group_id = '$group_id'";
+        }
 
         $objPHPExcel    =   new PHPExcel();
         $objPHPExcel->setActiveSheetIndex(0);
@@ -63,7 +68,7 @@ switch ($act){
                                 
                         FROM    users
                         JOIN    `groups` ON `groups`.id = users.group_id
-                        WHERE   users.actived = 1 AND users.group_id != 1
+                        WHERE   users.actived = 1 AND users.group_id != 1 $where
                         GROUP BY users.id
                         ORDER BY users.id");
 
