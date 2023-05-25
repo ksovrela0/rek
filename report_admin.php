@@ -553,7 +553,7 @@
 		LoadKendoTable_incomming(report_date);
 	})
     $(document).on('click', '#export_excel', function(){
-        window.open('export.php?act=admin_export&report_date='+$("#report_date").val(), '_blank').focus();
+        window.open('export.php?act=admin_export&report_date='+$("#report_date").val()+'&group_id='+$("#user_group").val(), '_blank').focus();
     })
 	$(document).on('click','#upload_img',function(){
 		$("#upload_back_img").trigger('click');
