@@ -313,7 +313,7 @@
 		$.ajax({
 			url: aJaxURL,
 			type: "POST",
-			data: "act=disable&id=" + removeIDS,
+			data: "act=disable_h&id=" + removeIDS,
 			dataType: "json",
 			success: function (data) {
 				$("#users").data("kendoGrid").dataSource.read();

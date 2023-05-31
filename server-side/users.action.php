@@ -47,7 +47,7 @@ switch ($act){
     case 'save_user':
         $id = $_REQUEST['id'];
 
-
+        $uid = intval($_REQUEST['uid']);
         $firstname = $_REQUEST['firstname'];
         $lastname = $_REQUEST['lastname'];
         $pid = intval($_REQUEST['pid']);
@@ -55,15 +55,28 @@ switch ($act){
         $group_id = $_REQUEST['user_group'];
         $username = $_REQUEST['username'];
         $password = $_REQUEST['password'];
+
+
+        $position = $_REQUEST['position'];
+        $birth_date = $_REQUEST['birth_date'];
+        $address = $_REQUEST['address'];
+        $user_pension = $_REQUEST['user_pension'];
+        $user_social = $_REQUEST['user_social'];
         
         if($id == ''){
             $db->setQuery(" INSERT INTO users SET firstname = '$firstname',
                                                     lastname = '$lastname',
                                                     pid = '$pid',
                                                     phone = '$phone',
-                                                    group_id = '$group_id',
+                                                    `group_id` = '$group_id',
                                                     username = '$username',
-                                                    password = '$password'");
+                                                    password = '$password',
+                                                    position = '$position',
+                                                    birth_date = '$birth_date',
+                                                    `address` = '$address',
+                                                    pension = '$user_pension',
+                                                    social = '$user_social',
+                                                    id = '$uid'");
             $db->execQuery();
         }
         else{
@@ -72,10 +85,25 @@ switch ($act){
                                                 lastname = '$lastname',
                                                 pid = '$pid',
                                                 phone = '$phone',
-                                                group_id = '$group_id',
+                                                `group_id` = '$group_id',
                                                 username = '$username',
-                                                password = '$password'
+                                                password = '$password',
+                                                    position = '$position',
+                                                    birth_date = '$birth_date',
+                                                    `address` = '$address',
+                                                    pension = '$user_pension',
+                                                    social = '$user_social',
+                                                    id = '$uid'
                             WHERE   id = '$id'");
+            $db->execQuery();
+        }
+    break;
+    case 'disable_h':
+        $ids = $_REQUEST['id'];
+        $ids = explode(',',$ids);
+
+        foreach($ids AS $id){
+            $db->setQuery("DELETE FROM holidays WHERE id = '$id'");
             $db->execQuery();
         }
     break;
@@ -84,7 +112,7 @@ switch ($act){
         $ids = explode(',',$ids);
 
         foreach($ids AS $id){
-            $db->setQuery("DELETE FROM holidays WHERE id = '$id'");
+            $db->setQuery("UPDATE users SET actived = 0 WHERE id = '$id'");
             $db->execQuery();
         }
     break;
@@ -440,6 +468,10 @@ function getPage($res = ''){
     <fieldset class="fieldset">
         <legend>ინფორმაცია</legend>
         <div class="row">
+            <div class="col-sm-4">
+                <label>ID</label>
+                <input value="'.$res['id'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="u_id" class="idle" autocomplete="off">
+            </div>
             <div class="col-sm-4" '.$hide.'>
                 <label>სახელი</label>
                 <input value="'.$res['firstname'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="firstname" class="idle" autocomplete="off">
@@ -453,28 +485,58 @@ function getPage($res = ''){
                 <input value="'.$res['phone'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="phone" class="idle" autocomplete="off">
             </div>
             <div class="col-sm-4" '.$hide.'>
+                <label>დაბადების თარიღი</label>
+                <input value="'.$res['birth_date'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="birth_date" class="idle" autocomplete="off">
+            </div>
+            <div class="col-sm-4" '.$hide.'>
                 <label>პირადი ნომერი</label>
                 <input value="'.$res['pid'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="pid" class="idle" autocomplete="off">
+            </div>
+            <div class="col-sm-4" '.$hide.'>
+                <label>პოზიცია</label>
+                <input value="'.$res['position'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="position" class="idle" autocomplete="off">
+            </div>
+            <div class="col-sm-4" '.$hide.'>
+                <label>მისამართი</label>
+                <input value="'.$res['address'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="address" class="idle" autocomplete="off">
             </div>
             <div class="col-sm-4">
                 <label>ჯგუფი</label>
                 <select id="user_group">'.get_cat_1($res['group_id']).'</select>
             </div>
-            
+            <div class="col-sm-4">
+                <label>საპენსიო</label>
+                <select id="user_pension">'.get_yes_no($res['pension']).'</select>
+            </div>
+            <div class="col-sm-4">
+                <label>სოციალური</label>
+                <select id="user_social">'.get_yes_no($res['social']).'</select>
+            </div>
 
-            <div class="col-sm-4" '.$hide.'>
-                <label>username</label>
-                <input value="'.$res['username'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="username" class="idle" autocomplete="off">
-            </div>
-            <div class="col-sm-4" '.$hide.'>
-                <label>პაროლი</label>
-                <input value="'.$res['password'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="password" class="idle" autocomplete="off">
-            </div>
+            
         </div>
     </fieldset>
     
     <input type="hidden" id="user_id" value="'.$res['id'].'">
     ';
+
+    return $data;
+}
+function get_yes_no($id){
+    $data = '';
+    $checked_1 = '';
+    $checked_2 = '';
+    if($id == 1){
+        $checked_1 = 'selected';
+    }
+    else{
+        $checked_2 = 'selected';
+    }
+
+
+    $data .= '<option '.$checked_2.' value="0">არა</option>';
+    $data .= '<option '.$checked_1.' value="1">კი</option>';
+    
 
     return $data;
 }
@@ -527,7 +589,12 @@ function getObject($id){
                                 users.phone,
                                 users.group_id,
                                 users.username,
-                                users.password
+                                users.password,
+                                users.position,
+                                users.birth_date,
+                                users.address,
+                                users.social,
+                                users.pension
 
                     FROM        users
                     WHERE       users.id = '$id'");

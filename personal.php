@@ -289,11 +289,21 @@
 	<!-- Jquery js-->
 	
 	<div class="main-navbar-backdrop"></div>
-	<div title="ობიექტი" id="get_edit_page">
+	<div title="თანამშრომელი" id="get_edit_page">
 		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
 	</div>
 	<script>
 	var aJaxURL = "server-side/users.action.php";
+	function GetDate(iname) {
+            $("#" + iname).datepicker({
+                changeMonth: true,
+                changeYear: true
+            });
+            var date = $("#" + iname).val();
+            $("#" + iname).datepicker("option", $.datepicker.regional["ka"]);
+            $("#" + iname).datepicker("option", "dateFormat", "yy-mm-dd");
+            $("#" + iname).datepicker("setDate", date);
+        }
 	$(document).on("dblclick", "#users tr.k-state-selected", function () {
 		var grid = $("#users").data("kendoGrid");
 		var dItem = grid.dataItem($(this));
@@ -312,7 +322,8 @@
 			dataType: "json",
 			success: function(data){
 				$('#get_edit_page').html(data.page);
-                $("#user_group").chosen();
+                $("#user_group,#user_pension,#user_social").chosen();
+				GetDate('birth_date');
                 var obj_id = "&obj_id="+dItem.id;
                 LoadKendoTable_branches(obj_id);
 				$("#get_edit_page").dialog({
@@ -342,7 +353,8 @@
 			dataType: "json",
 			success: function(data){
 				$('#get_edit_page').html(data.page);
-				$("#user_group").chosen();
+				$("#user_group,#user_pension,#user_social").chosen();
+				GetDate('birth_date');
 				$("#get_edit_page").dialog({
 					resizable: false,
 					height: 500,
@@ -647,6 +659,14 @@
 		params.pid 		= $("#pid").val();
 		params.username 	= $("#username").val();
 		params.password 	= $("#password").val();
+
+		params.position 	= $("#position").val();
+		params.birth_date 	= $("#birth_date").val();
+		params.address 	= $("#address").val();
+		params.user_pension 	= $("#user_pension").val();
+		params.user_social 	= $("#user_social").val();
+
+		params.uid = $("#u_id").val();
 		$.ajax({
 			url: aJaxURL,
 			type: "POST",
