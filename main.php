@@ -65,10 +65,12 @@
         }
         .day_data{
             font-size: 14px;
+            box-shadow: 1px 5px #888888;
         }
         .day_data td{
             padding-left: 5px;
             text-align: center;
+            
             
         }
         .day_data_title{
@@ -113,9 +115,10 @@
             height: 0;
             border-left: 7px solid transparent;
             border-right: 7px solid transparent;
-            border-bottom: 12px solid #fff;
+            border-bottom: 12px solid purple;
             margin-top: 7px;
-            margin-right: 5px;
+            margin-left: 15px;
+            margin-right: 15px;
             transition: transform 0.25s;
         }
         .rotated{
@@ -143,6 +146,7 @@
 
         .user_wrapper{
             margin-bottom: 10px;
+            box-shadow: 2px 4px #888888
         }
         .users_container{
             border: 2px solid #691e94;
@@ -217,25 +221,25 @@
                 <div class="row row-sm">
                     <div class="col-sm-2">
 						<label>აირჩიეთ ჯგუფი</label>
-						<select id="user_group" style="width:95%;">
+						<select id="user_group" style="width:95%; border: 3px solid #413241; text-align: center;font-size: 20px; background: #691e94; color: white;">
 							<?php getUserGroups(0); ?>
 						</select>
 					</div>
 
                     <div class="col-sm-2">
 						<label>გვარი</label>
-						<input data-nec="0" style="width: 95%;height: 20px;font-size: 16px; margin-bottom: 10px;padding: 6px;" type="text" id="user_lastname" class="idle form-input" autocomplete="off">
+						<input data-nec="0" placeholder="გვარი" style="width: 95%; height: 30px;font-size: 16px; margin-bottom: 10px;padding: 6px; border: 3px solid #413241; text-align: center;font-size: 20px; background: #691e94; color: white;  white;" type="text" id="user_lastname" class="idle form-input" autocomplete="off">
 					</div>
 
                     <div class="col-sm-2">
 						<label>აირჩიეთ წელი</label>
-						<select style="width:95%;" id="tabel_year">
+						<select style="width:95%; border: 3px solid #413241; text-align: center;font-size: 20px; background: #691e94; color: white;" id="tabel_year">
 							<?php getYears(date('Y')); ?>
 						</select>
 					</div>
                     <div class="col-sm-2">
 						<label>აირჩიეთ თვე</label>
-						<select style="width:95%;" id="tabel_month">
+						<select style="width:95%; border: 3px solid #413241; text-align: center;font-size: 20px; background: #691e94; color: white;" id="tabel_month">
 							<?php getMonth(date('m')); ?>
 						</select>
 					</div>
@@ -430,12 +434,12 @@
                 if(second_call == 0){
                     $('.calendarContainer[data-user-id="'+data_id+'"]').prepend(`   <div class="tabel_filter">
                                                                                     <div style="display: flex;">
-                                                                                        <select style="width: 95px;" class="tabel_year_o">
+                                                                                        <select style="width:130px; border: 3px solid #413241; text-align: center;font-size: 20px; background: #691e94; color: white;" class="tabel_year_o">
                                                                                         `+$('#tabel_year').html()+`
                                                                                         </select>
                                                                                     </div>
                                                                                     <div style="display: flex;">
-                                                                                        <select class="tabel_month_o">
+                                                                                        <select class="tabel_month_o" style="width:130px; border: 3px solid #413241; text-align: center;font-size: 20px; background: #691e94; color: white; margin-left: 10px;">
                                                                                         `+$('#tabel_month').html()+`
                                                                                         </select>
                                                                                     </div>

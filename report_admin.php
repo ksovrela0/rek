@@ -200,7 +200,7 @@
 				<div class="row">
                     <div class="col-md-2">
                         <label>აირჩიეთ პერიოდი</label>
-                        <input data-nec="0" style="    width: 95%;
+                        <input data-nec="0" style="  width:95%; border: 3px solid #413241; text-align: center;font-size: 20px; background: #691e94; color: white;;
 							height: 28px;
 							font-size: 16px;
 							margin-bottom: 10px;
@@ -209,7 +209,7 @@
                     </div>
 					<div class="col-md-2">
 						<label>აირჩიეთ ჯგუფი</label>
-						<select id="user_group" style="width:95%;">
+						<select id="user_group" style="width:95%; width:95%; border: 3px solid #413241; text-align: center;font-size: 20px; background: #691e94; color: white;">
 							<?php getUserGroups(0); ?>
 						</select>
 					</div>
