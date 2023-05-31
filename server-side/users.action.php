@@ -7,13 +7,42 @@ $act = $_REQUEST['act'];
 $user_id = $_SESSION['USERID'];
 $user_gr = $_SESSION['GRPID'];
 switch ($act){
+    case 'get_add_page_h':
+        $id = $_REQUEST['id'];
+        $data = array('page' => getPageH());
+    break;
     case 'get_add_page':
         $id = $_REQUEST['id'];
         $data = array('page' => getPage());
     break;
+    case 'get_edit_page_h':
+        $id = $_REQUEST['id'];
+        $data = array('page' => getPageH(getHoliday($id)));
+    break;
     case 'get_edit_page':
         $id = $_REQUEST['id'];
         $data = array('page' => getPage(getObject($id)));
+    break;
+    case 'save_holiday':
+        $id = $_REQUEST['id'];
+
+
+        $tarigi = $_REQUEST['tarigi'];
+        $h_name = $_REQUEST['h_name'];
+        
+        
+        if($id == ''){
+            $db->setQuery(" INSERT INTO holidays SET tarigi = '$tarigi',
+                                                    name = '$h_name'");
+            $db->execQuery();
+        }
+        else{
+            $db->setQuery(" UPDATE  holidays 
+                            SET    tarigi = '$tarigi',
+                                    name = '$h_name'
+                            WHERE   id = '$id'");
+            $db->execQuery();
+        }
     break;
     case 'save_user':
         $id = $_REQUEST['id'];
@@ -55,7 +84,7 @@ switch ($act){
         $ids = explode(',',$ids);
 
         foreach($ids AS $id){
-            $db->setQuery("UPDATE users SET actived = 0 WHERE id = '$id'");
+            $db->setQuery("DELETE FROM holidays WHERE id = '$id'");
             $db->execQuery();
         }
     break;
@@ -152,6 +181,21 @@ switch ($act){
         //$data = '[{"gg":"sd","ads":"213123"}]';
         
     break;
+    case 'get_list_holidays':
+        $id          =      $_REQUEST['hidden'];
+        
+        $columnCount = 		$_REQUEST['count'];
+		$cols[]      =      $_REQUEST['cols'];
+        $db->setQuery(" SELECT  id,
+                                tarigi,
+                                name
+                        FROM     holidays
+                        ORDER BY tarigi DESC");
+
+        $result = $db->getKendoList($columnCount, $cols);
+
+        $data = $result;
+        break;
     case 'get_list_admins':
         $id          =      $_REQUEST['hidden'];
         $report_date = explode(' - ', $_REQUEST['report_date']);
@@ -358,7 +402,32 @@ switch ($act){
 
 
 echo json_encode($data);
+function getPageH($res = ''){
+    GLOBAL $user_gr;
 
+    $data .= '
+    
+    
+    <fieldset class="fieldset">
+        <legend>ინფორმაცია</legend>
+        <div class="row">
+            <div class="col-sm-6">
+                <label>თარიღი</label>
+                <input value="'.$res['tarigi'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="tarigi" class="idle" autocomplete="off">
+            </div>
+            <div class="col-sm-6">
+                <label>დასახელება</label>
+                <input value="'.$res['name'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="h_name" class="idle" autocomplete="off">
+            </div>
+            
+        </div>
+    </fieldset>
+    
+    <input type="hidden" id="holiday_id" value="'.$res['id'].'">
+    ';
+
+    return $data;
+}
 function getPage($res = ''){
     GLOBAL $user_gr;
     if($user_gr == 11){
@@ -433,6 +502,20 @@ function get_cat_1($id){
     }
 
     return $data;
+}
+
+function getHoliday($id){
+    GLOBAL $db;
+
+    $db->setQuery(" SELECT      holidays.id,
+                                holidays.name,
+                                holidays.tarigi
+
+                    FROM        holidays
+                    WHERE       holidays.id = '$id'");
+    $result = $db->getResultArray();
+
+    return $result['result'][0];
 }
 function getObject($id){
     GLOBAL $db;
