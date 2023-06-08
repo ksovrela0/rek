@@ -131,7 +131,7 @@ switch ($act){
 
         
         $data['holidays'] = $holidays['result'] == '' ? array() :  $holidays['result'];
-
+        //324
 
 
         $data['working_hours_total'] = calculate_hours($total_worked_time);
