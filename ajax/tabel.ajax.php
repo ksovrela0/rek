@@ -130,7 +130,7 @@ switch ($act){
 
 
         
-        $data['holidays'] = $holidays['result'];
+        $data['holidays'] = $holidays['result'] == '' ? array() :  $holidays['result'];
 
 
 
