@@ -91,7 +91,7 @@ switch ($act){
         foreach($attendance AS $times){
             $total_worked_time += $times['working_hours_seconds'];
 
-            if(date("l", strtotime($times['authDate'])) == 'Saturday' || date("l", strtotime($times['authDate'])) == 'sunday' || in_array($times['authDate'], $holi_dates)){
+            if(date("l", strtotime($times['authDate'])) == 'Saturday' || date("l", strtotime($times['authDate'])) == 'Sunday' || in_array($times['authDate'], $holi_dates)){
                 $total_worked_nonwork_time += $times['working_hours_seconds'];
             }
 
