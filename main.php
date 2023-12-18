@@ -404,7 +404,7 @@
                         day_container += `<span class="day_day title_red">`+i+`</span>`;
                     }
                     else{
-                        day_container = `   <span>
+                        day_container = `   <span data-table-day="`+i+`">
                                                 <table class="day_data" cellspacing="2">
                                                     <tr>
                                                         <td class="day_data_title">მოსვლა</td>
@@ -455,6 +455,10 @@
                                                                                     <tr>
                                                                                         <td class="detailed_left_side">ნამუშევარი საათები</td>
                                                                                         <td class="detailed_right_side total_worked_hours">00:00</td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td class="detailed_left_side">ნამუშევარი დღეები</td>
+                                                                                        <td class="detailed_right_side total_worked_days">0 დღე</td>
                                                                                     </tr>
                                                                                     <tr>
                                                                                         <td class="detailed_left_side">უქმე დღეებში ნამუშევარი საათები</td>
@@ -550,6 +554,7 @@
                                 $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_lated_hours').html(data.total_lated_hours);
                                 $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_additional_worked_hours').html(data.total_additional_worked_hours);
                                 $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_lated_days').html(data.total_lated_days+' დღე');
+                                $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_worked_days').html(data.total_worked_days+' დღე');
                                 
                             //}
                         }
@@ -628,10 +633,23 @@
                                 createCalendar(month, year, user_id);
 
                                 let holidays = data.holidays;
+                                
                                 holidays.forEach(function(i, x){
                                     $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day_of_month+'"] .day_day').css('color', 'red').append(`<span class="holiday_title"> `+i.name+`</span>`)
                                 })
 
+                                let vacations = data.vacations;
+                                vacations.forEach(function(i, x){
+                                    if(i.type_id == 1){
+                                        $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] span[data-table-day="'+i.day+'"]').remove()
+                                        $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"]').append(`შვებულება`)
+                                    }
+                                    else if(i.type_id == 2){
+                                        $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"] span[data-table-day="'+i.day+'"]').remove()
+                                        $('.calendarContainer[data-user-id="'+user_id+'"] .day[day="'+i.day+'"]').append(`Dayoff`)
+                                    }
+                                    
+                                })
 
                                 let tabel_data = data.result;
                                 tabel_data.forEach(function(i,x){
@@ -682,6 +700,7 @@
                                 $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_lated_hours').html(data.total_lated_hours);
                                 $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_additional_worked_hours').html(data.total_additional_worked_hours);
                                 $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_lated_days').html(data.total_lated_days+' დღე');
+                                $('.calendarContainer[data-user-id="'+user_id+'"] .detailed_info td.total_worked_days').html(data.total_worked_days+' დღე');
                                 
                             //}
                         }

@@ -34,6 +34,7 @@ switch ($act){
                                 TIME_FORMAT(ADDTIME(tst.plan_in, '00:15'), '%H:%i') AS plan_in,
                                 tst.plan_out,
                                 tst.working_minutes * 60 AS working_seconds,
+                                tst.min_working_minutes * 60 AS min_working_seconds,
                                 tst.check_in,
                                 tst.check_out,
                                 tst.check_wm,
@@ -78,11 +79,35 @@ switch ($act){
         $holidays = $db->getResultArray();
 
 
+        $db->setQuery(" SELECT id, start_date, end_date, type_id
+                        FROM 
+                            vacations
+                        WHERE 
+                            user_id = '$person_id'
+                            AND actived = 1
+                            AND (`start_date` BETWEEN '".$filteredDate."-01' AND '".$lastDate."' OR end_date BETWEEN '".$filteredDate."-01' AND '".$lastDate."')");
+        $dayoffs = $db->getResultArray();
+
+        $vacations = array();
+
+        foreach($dayoffs['result'] AS $days){
+            //var_dump(getBetweenDates($days['start_date'], $days['end_date']));
+            foreach(getBetweenDates($days['start_date'], $days['end_date']) AS $dd){
+
+                if(explode('-',$dd)[1] == $month){
+                    array_push($vacations, array('type_id' => $days['type_id'],
+                    'day' => explode('-',$dd)[2]));
+                }
+                
+            }
+            
+        }
         foreach($holidays['result'] AS $holiday){
             array_push($holi_dates, $holiday['tarigi']);
         }
         //var_dump($holi_dates);
         $total_worked_time = 0;
+        $total_worked_days = 0;
         $total_worked_nonwork_time = 0;
         $total_lated_time = 0;
         $total_additional_worked_time = 0;
@@ -121,6 +146,10 @@ switch ($act){
                 $total_additional_worked_time += $check_additional_worked - $times['working_seconds'];
             }
 
+            if($times['working_hours_seconds'] >= $times['min_working_seconds']){
+                $total_worked_days++;
+            }
+
 
 
         }
@@ -132,13 +161,14 @@ switch ($act){
         
         $data['holidays'] = $holidays['result'] == '' ? array() :  $holidays['result'];
         //324
-
+        $data['vacations'] = $vacations;
 
         $data['working_hours_total'] = calculate_hours($total_worked_time);
         $data['total_worked_nonwork_hours'] = calculate_hours($total_worked_nonwork_time);
         $data['total_lated_hours'] = calculate_hours($total_lated_time);
         $data['total_additional_worked_hours'] = calculate_hours($total_additional_worked_time);
         $data['total_lated_days'] = $total_lated_days;
+        $data['total_worked_days'] = $total_worked_days;
         break;
 }
 
@@ -153,6 +183,22 @@ function calculate_hours($seconds = 0){// Example: 100,000 seconds
     $timeFormat = sprintf('%02d:%02d', $totalHours, $minutes);
 
     return $timeFormat;
+}
+
+function getBetweenDates($startDate, $endDate) {
+    $array = array();
+    $interval = new DateInterval('P1D');
+ 
+    $realEnd = new DateTime($endDate);
+    $realEnd->add($interval);
+ 
+    $period = new DatePeriod(new DateTime($startDate), $interval, $realEnd);
+ 
+    foreach($period as $date) {
+        $array[] = $date->format('Y-m-d');
+    }
+ 
+    return $array;
 }
 
 ?>

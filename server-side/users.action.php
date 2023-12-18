@@ -23,6 +23,17 @@ switch ($act){
         $id = $_REQUEST['id'];
         $data = array('page' => getPage(getObject($id)));
     break;
+
+    case 'get_grafik_page':
+        $id = $_REQUEST['id'];
+        $data = array('page' => getPageGrafik(getGrafik($id)));
+    break;
+        
+    case 'get_dayoff_page':
+        $id = $_REQUEST['id'];
+        $data = array('page' => getPageDayoff(getDayoff($id)));
+    break;
+
     case 'save_holiday':
         $id = $_REQUEST['id'];
 
@@ -40,6 +51,74 @@ switch ($act){
             $db->setQuery(" UPDATE  holidays 
                             SET    tarigi = '$tarigi',
                                     name = '$h_name'
+                            WHERE   id = '$id'");
+            $db->execQuery();
+        }
+    break;
+    case 'save_dayoff':
+
+        $id = $_REQUEST['id'];
+
+        $vacation_type = $_REQUEST['vacation_type'];
+        $user_id = $_REQUEST['user_id'];
+        $start_date = $_REQUEST['start_date'];
+        $end_date = $_REQUEST['end_date'];
+        
+        
+        
+        if($id == ''){
+            $db->setQuery(" INSERT INTO vacations SET type_id = '$vacation_type',
+                                                    user_id = '$user_id',
+                                                    `start_date` = '$start_date',
+                                                    end_date = '$end_date',
+                                                    `create_date` = NOW()");
+            $db->execQuery();
+        }
+        else{
+            $db->setQuery(" UPDATE  vacations 
+                            SET    type_id = '$vacation_type',
+                                                    user_id = '$user_id',
+                                                    `start_date` = '$start_date',
+                                                    end_date = '$end_date'
+                            WHERE   id = '$id'");
+            $db->execQuery();
+        }
+        break;
+    case 'save_grafik':
+        $id = $_REQUEST['id'];
+
+        $grafik_name = $_REQUEST['grafik_name'];
+        $location_addr = $_REQUEST['location_addr'];
+        $plan_in = $_REQUEST['plan_in'];
+        $min_working_minutes = $_REQUEST['min_working_minutes'];
+        $latecome = $_REQUEST['latecome'];
+        $working_minutes = $_REQUEST['working_minutes'];
+        $vacation_days = $_REQUEST['vacation_days'];
+
+        $plan_out = date("H:i", strtotime('+'.$working_minutes.' minutes', strtotime($plan_in)));
+        
+        
+        if($id == ''){
+            $db->setQuery(" INSERT INTO tbl_schedule_types SET name = '$grafik_name',
+                                                    location_addr = '$location_addr',
+                                                    plan_in = '$plan_in',
+                                                    plan_out = '$plan_out',
+                                                    `min_working_minutes` = '$min_working_minutes',
+                                                    working_minutes = '$working_minutes',
+                                                    latecome = '$latecome',
+                                                    vacation_days = '$vacation_days'");
+            $db->execQuery();
+        }
+        else{
+            $db->setQuery(" UPDATE  tbl_schedule_types 
+                            SET    name = '$grafik_name',
+                            location_addr = '$location_addr',
+                                                    plan_in = '$plan_in',
+                                                    plan_out = '$plan_out',
+                                                    `min_working_minutes` = '$min_working_minutes',
+                                                    working_minutes = '$working_minutes',
+                                                    latecome = '$latecome',
+                                                    vacation_days = '$vacation_days'
                             WHERE   id = '$id'");
             $db->execQuery();
         }
@@ -95,6 +174,24 @@ switch ($act){
                                                     social = '$user_social',
                                                     id = '$uid'
                             WHERE   id = '$id'");
+            $db->execQuery();
+        }
+    break;
+    case 'disable_d':
+        $ids = $_REQUEST['id'];
+        $ids = explode(',',$ids);
+
+        foreach($ids AS $id){
+            $db->setQuery("UPDATE vacations SET actived = 0 WHERE id = '$id'");
+            $db->execQuery();
+        }
+        break;
+    case 'disable_g':
+        $ids = $_REQUEST['id'];
+        $ids = explode(',',$ids);
+
+        foreach($ids AS $id){
+            $db->setQuery("UPDATE tbl_schedule_types SET deleted = 2 WHERE id = '$id'");
             $db->execQuery();
         }
     break;
@@ -373,6 +470,44 @@ switch ($act){
         }
         $data = $result;
     break;
+    case 'get_list_dayoff':
+        $id          =      $_REQUEST['hidden'];
+		
+        $columnCount = 		$_REQUEST['count'];
+		$cols[]      =      $_REQUEST['cols'];
+        $db->setQuery(" SELECT  vacations.id,
+                                vacations_type.name,
+                                CONCAT(users.firstname, ' ', users.lastname),
+                                vacations.start_date,
+                                vacations.end_date
+
+                        FROM    vacations
+                        JOIN    vacations_type ON vacations_type.id = vacations.type_id
+                        JOIN    users ON users.id = vacations.user_id
+                        WHERE   vacations.actived = 1");
+
+        $result = $db->getKendoList($columnCount, $cols);
+        $data = $result;
+    break;
+    case 'get_list_sch':
+        $id          =      $_REQUEST['hidden'];
+		
+        $columnCount = 		$_REQUEST['count'];
+		$cols[]      =      $_REQUEST['cols'];
+        $db->setQuery(" SELECT  id,
+                                name,
+                                location_addr,
+                                plan_in,
+                                latecome,
+                                ROUND(min_working_minutes/60,2) AS min_working_hours,
+                                ROUND(working_minutes/60,2) AS working_hours,
+                                vacation_days
+                        FROM    tbl_schedule_types
+                        WHERE   deleted = 1");
+
+        $result = $db->getKendoList($columnCount, $cols);
+        $data = $result;
+    break;
     case 'get_list':
         $id          =      $_REQUEST['hidden'];
 		
@@ -452,6 +587,85 @@ function getPageH($res = ''){
     </fieldset>
     
     <input type="hidden" id="holiday_id" value="'.$res['id'].'">
+    ';
+
+    return $data;
+}
+function getPageDayoff($res = ''){
+    $data .= '
+    
+    
+    <fieldset class="fieldset">
+        <legend>ინფორმაცია</legend>
+        <div class="row">
+            <div class="col-sm-4" >
+                <label>ტიპი</label>
+                <select id="vacation_type">'.get_vac_type($res['type_id']).'</select>
+            </div>
+            <div class="col-sm-4" >
+                <label>თანამშრომელი</label>
+                <select id="user_id">'.get_users($res['user_id']).'</select>
+            </div>
+            <div class="col-sm-6" >
+                <label>დასაწყისი</label>
+                <input value="'.$res['start_date'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="start_date" class="idle" autocomplete="off">
+            </div>
+            <div class="col-sm-6" >
+                <label>დასასრული</label>
+                <input value="'.$res['end_date'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="end_date" class="idle" autocomplete="off">
+            </div>
+            
+
+            
+        </div>
+    </fieldset>
+    
+    <input type="hidden" id="vacation_id" value="'.$res['id'].'">
+    ';
+
+    return $data;
+}
+function getPageGrafik($res = ''){
+    $data .= '
+    
+    
+    <fieldset class="fieldset">
+        <legend>ინფორმაცია</legend>
+        <div class="row">
+            <div class="col-sm-4" >
+                <label>სახელი</label>
+                <input value="'.$res['name'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="grafik_name" class="idle" autocomplete="off">
+            </div>
+            <div class="col-sm-4" >
+                <label>მდებარეობა</label>
+                <input value="'.$res['location_addr'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="location_addr" class="idle" autocomplete="off">
+            </div>
+            <div class="col-sm-4" >
+                <label>დაწყების დრო</label>
+                <input value="'.$res['plan_in'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="plan_in" class="idle" autocomplete="off">
+            </div>
+            <div class="col-sm-4" >
+                <label>დაგვიანების ათვლა წუთებში</label>
+                <input value="'.$res['latecome'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="latecome" class="idle" autocomplete="off">
+            </div>
+            <div class="col-sm-4" >
+                <label>მინ სამუშაო საათები (წუთებში)</label>
+                <input value="'.$res['min_working_minutes'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="min_working_minutes" class="idle" autocomplete="off">
+            </div>
+            <div class="col-sm-4" >
+                <label>სავალდებულო სამუშაო საათები</label>
+                <input value="'.$res['working_minutes'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="working_minutes" class="idle" autocomplete="off">
+            </div>
+            <div class="col-sm-4" >
+                <label>შვებულებები</label>
+                <input value="'.$res['vacation_days'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="vacation_days" class="idle" autocomplete="off">
+            </div>
+
+            
+        </div>
+    </fieldset>
+    
+    <input type="hidden" id="grafik_id" value="'.$res['id'].'">
     ';
 
     return $data;
@@ -540,6 +754,52 @@ function get_yes_no($id){
 
     return $data;
 }
+function get_users($id){
+    GLOBAL $db,$user_gr;
+
+
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            CONCAT(firstname,' ', lastname) AS 'name'
+                    FROM    `users`
+                    WHERE   actived = 1");
+    $cats = $db->getResultArray();
+    $data .= '<option value="0" selected="selected">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+        
+    }
+
+    return $data;
+}
+function get_vac_type($id){
+    GLOBAL $db,$user_gr;
+
+
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    `vacations_type`
+                    WHERE   actived = 1");
+    $cats = $db->getResultArray();
+    $data .= '<option value="0" selected="selected">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+        
+    }
+
+    return $data;
+}
 function get_cat_1($id){
     GLOBAL $db,$user_gr;
     $data = '';
@@ -575,6 +835,26 @@ function getHoliday($id){
 
                     FROM        holidays
                     WHERE       holidays.id = '$id'");
+    $result = $db->getResultArray();
+
+    return $result['result'][0];
+}
+function getDayoff($id){
+    GLOBAL $db;
+    $db->setQuery(" SELECT      *
+
+                    FROM        vacations
+                    WHERE       vacations.id = '$id'");
+    $result = $db->getResultArray();
+
+    return $result['result'][0];
+}
+function getGrafik($id){
+    GLOBAL $db;
+    $db->setQuery(" SELECT      *
+
+                    FROM        tbl_schedule_types
+                    WHERE       tbl_schedule_types.id = '$id'");
     $result = $db->getResultArray();
 
     return $result['result'][0];
