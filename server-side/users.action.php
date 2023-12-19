@@ -790,6 +790,7 @@ function getPage($res = ''){
             <div class="col-sm-4">
                 <label>ხელშეკრულების ფაილი</label>
                 <input style="height: 48px!important;" type="file" id="order_file" class="upload_new_file">
+                <a id="order_file_file" href="'.$res['order_file'].'" target="_blank"><img style="width:16px;" src="assets/img/file.png"> ნახვა</a>
             </div>
 
 
@@ -801,6 +802,7 @@ function getPage($res = ''){
             <div class="col-sm-6">
                 <label>რეესტრის ფაილი</label>
                 <input style="height: 48px!important;" type="file" id="register_file" class="upload_new_file">
+                <a id="register_file_file" href="'.$res['register_file'].'" target="_blank"><img style="width:16px;" src="assets/img/file.png"> ნახვა</a>
             </div>';
 
             $anketa_file = 'display:none;';
