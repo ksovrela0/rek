@@ -304,6 +304,144 @@
             $("#" + iname).datepicker("option", "dateFormat", "yy-mm-dd");
             $("#" + iname).datepicker("setDate", date);
         }
+
+	
+	$(document).on('click', '#anketa_checkbox', function(){
+		if($(this).prop('checked')){
+			$("#anketa_file,#anketa_file_file").css('display','block');
+		}
+		else{
+			$("#anketa_file,#anketa_file_file").css('display','none');
+		}
+	});	
+
+
+	$(document).on('click', '#instructions_checkbox', function(){
+		if($(this).prop('checked')){
+			$("#instructions_file,#instructions_file_file").css('display','block');
+		}
+		else{
+			$("#instructions_file,#instructions_file_file").css('display','none');
+		}
+	});	
+
+
+	$(document).on('click', '#orderTaken_checkbox', function(){
+		if($(this).prop('checked')){
+			$("#orderTaken_file,#orderTaken_file_file").css('display','block');
+		}
+		else{
+			$("#orderTaken_file,#orderTaken_file_file").css('display','none');
+		}
+	});	
+	$(document).on('click', "#upProdImg", function(){
+		$("#product_file").trigger("click");
+	})
+	$(document).on('change','.upload_new_file',function(e){
+		//submit the form here
+		//var name = $(".fileupchat").val();
+
+		var id_attr = $(this).attr('id');
+		var file_data = $('#'+id_attr).prop('files')[0];
+		var fileName = e.target.files[0].name;
+		var fileNameN = Math.ceil(Math.random()*99999999999);
+		var fileSize = e.target.files[0].size;
+		var fileExt = $(this).val().split('.').pop().toLowerCase();
+		var form_data = new FormData();
+		console.log(file_data)
+		form_data.append('act', 'upload_new_file');
+		form_data.append('file', file_data);
+		form_data.append('ext', fileExt);
+		form_data.append('original', fileName);
+		form_data.append('newName', fileNameN);
+		form_data.append('type', $(this).attr('id'));
+		form_data.append('user_id', $("#user_id").val());
+		var fileExtension = ['jpg','png','gif','jpeg','pdf','xlsx','docx'];
+		if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
+		alert("დაუშვებელი ფორმატი!!!  გამოიყენეთ მხოლოდ: "+fileExtension.join(', '));
+		$("#"+id_attr).val('');
+		}
+		else {
+			if(fileSize>20971520) {
+				alert("შეცდომა! ფაილის ზომა 20MB-ზე მეტია!!!");
+				$("#"+id_attr).val('');
+			}
+			else{
+				$.ajax({
+					url: 'up.php', // point to server-side PHP script
+					dataType: 'json',  // what to expect back from the PHP script, if anything
+					cache: false,
+					contentType: false,
+					processData: false,
+					data: form_data,
+					type: 'post',
+					success: function (data) {
+						
+						if(data.status == 'OK'){
+							//$("#upProdImg").attr("src", data.src);
+							//$('#id_attr').parent().append(``)
+							$("#"+id_attr).parent().find("a").attr('href',data.src)
+							alert("ფაილი ატვირთულია");
+						}
+						else{
+							alert('ვერ მოხერხდა ფაილის ატვირთვა');
+						}
+					}
+				});
+			}
+		}
+		
+	});
+	$(document).on('change','#product_file',function(e){
+		//submit the form here
+		//var name = $(".fileupchat").val();
+		var file_data = $('#product_file').prop('files')[0];
+		var fileName = e.target.files[0].name;
+		var fileNameN = Math.ceil(Math.random()*99999999999);
+		var fileSize = e.target.files[0].size;
+		var fileExt = $(this).val().split('.').pop().toLowerCase();
+		var form_data = new FormData();
+		console.log(file_data)
+		form_data.append('act', 'product_img');
+		form_data.append('file', file_data);
+		form_data.append('ext', fileExt);
+		form_data.append('original', fileName);
+		form_data.append('newName', fileNameN);
+		form_data.append('user_id', $("#user_id").val());
+		var fileExtension = ['jpg','png','gif','jpeg'];
+		if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
+		alert("დაუშვებელი ფორმატი!!!  გამოიყენეთ მხოლოდ: "+fileExtension.join(', '));
+		$("#product_file").val('');
+		}
+		else {
+			if(fileSize>20971520) {
+				alert("შეცდომა! ფაილის ზომა 20MB-ზე მეტია!!!");
+				$("#product_file").val('');
+			}
+			else{
+				$.ajax({
+					url: 'up.php', // point to server-side PHP script
+					dataType: 'json',  // what to expect back from the PHP script, if anything
+					cache: false,
+					contentType: false,
+					processData: false,
+					data: form_data,
+					type: 'post',
+					success: function (data) {
+						
+						if(data.status == 'OK'){
+							$("#upProdImg").attr("src", data.src);
+							alert("ფაილი ატვირთულია");
+						}
+						else{
+							alert('ვერ მოხერხდა ფაილის ატვირთვა');
+						}
+					}
+				});
+			}
+		}
+		
+	});
 	$(document).on("dblclick", "#users tr.k-state-selected", function () {
 		var grid = $("#users").data("kendoGrid");
 		var dItem = grid.dataItem($(this));
@@ -322,13 +460,13 @@
 			dataType: "json",
 			success: function(data){
 				$('#get_edit_page').html(data.page);
-                $("#user_group,#user_pension,#user_social").chosen();
+                $("#user_group,#user_pension,#user_social,#user_work_grafik").chosen();
 				GetDate('birth_date');
                 var obj_id = "&obj_id="+dItem.id;
                 LoadKendoTable_branches(obj_id);
 				$("#get_edit_page").dialog({
 					resizable: false,
-					height: 500,
+					height: 900,
 					width: 900,
 					modal: true,
 					buttons: {
@@ -353,7 +491,7 @@
 			dataType: "json",
 			success: function(data){
 				$('#get_edit_page').html(data.page);
-				$("#user_group,#user_pension,#user_social").chosen();
+				$("#user_group,#user_pension,#user_social,#user_work_grafik").chosen();
 				GetDate('birth_date');
 				$("#get_edit_page").dialog({
 					resizable: false,
@@ -444,7 +582,7 @@
 		//KendoUI CLASS CONFIGS BEGIN
 		var aJaxURL	        =   "server-side/users.action.php";
 		var gridName        = 	'users';
-		var actions         = 	'<div class="btn btn-list"><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> წაშლა</a></div>';
+		var actions         = 	'<div class="btn btn-list"><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> წაშლა</a><a id="button_lay_off" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> გათავისუფლება</a></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
 		var columnsCount    =	11;
@@ -665,6 +803,15 @@
 		params.address 	= $("#address").val();
 		params.user_pension 	= $("#user_pension").val();
 		params.user_social 	= $("#user_social").val();
+
+
+
+		params.tbl_shecdule_type_id 	= $("#user_work_grafik").val();
+		params.order_number 	= $("#order_number").val();
+		params.register_number 	= $("#register_number").val();
+		params.anketa_checkbox 	= $("#anketa_checkbox").prop('checked');
+		params.instructions_checkbox 	= $("#instructions_checkbox").prop('checked');
+		params.orderTaken_checkbox 	= $("#orderTaken_checkbox").prop('checked');
 
 		params.uid = $("#u_id").val();
 		$.ajax({

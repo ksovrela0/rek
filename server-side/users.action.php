@@ -141,6 +141,39 @@ switch ($act){
         $address = $_REQUEST['address'];
         $user_pension = $_REQUEST['user_pension'];
         $user_social = $_REQUEST['user_social'];
+
+
+
+        $tbl_shecdule_type_id = $_REQUEST['tbl_shecdule_type_id'];
+        $order_number = $_REQUEST['order_number'];
+        $register_number = $_REQUEST['register_number'];
+
+        $anketa_checkbox = $_REQUEST['anketa_checkbox'];
+        $instructions_checkbox = $_REQUEST['instructions_checkbox'];
+        $orderTaken_checkbox = $_REQUEST['orderTaken_checkbox'];
+
+
+
+        if($orderTaken_checkbox == 'true'){
+            $orderTaken_checkbox = 1;
+        }
+        else{
+            $orderTaken_checkbox = 0;
+        }
+
+        if($instructions_checkbox == 'true'){
+            $instructions_checkbox = 1;
+        }
+        else{
+            $instructions_checkbox = 0;
+        }
+
+        if($anketa_checkbox == 'true'){
+            $anketa_checkbox = 1;
+        }
+        else{
+            $anketa_checkbox = 0;
+        }
         
         if($id == ''){
             $db->setQuery(" INSERT INTO users SET firstname = '$firstname',
@@ -155,6 +188,14 @@ switch ($act){
                                                     `address` = '$address',
                                                     pension = '$user_pension',
                                                     social = '$user_social',
+
+                                                    tbl_schedule_type_id = '$tbl_shecdule_type_id',
+                                                    order_number = '$order_number',
+                                                    register_number = '$register_number',
+                                                    anketa_checkbox = '$anketa_checkbox',
+                                                    instructions_checkbox = '$instructions_checkbox',
+                                                    orderTaken_checkbox = '$orderTaken_checkbox',
+
                                                     id = '$uid'");
             $db->execQuery();
         }
@@ -172,6 +213,12 @@ switch ($act){
                                                     `address` = '$address',
                                                     pension = '$user_pension',
                                                     social = '$user_social',
+                                                    tbl_schedule_type_id = '$tbl_shecdule_type_id',
+                                                    order_number = '$order_number',
+                                                    register_number = '$register_number',
+                                                    anketa_checkbox = '$anketa_checkbox',
+                                                    instructions_checkbox = '$instructions_checkbox',
+                                                    orderTaken_checkbox = '$orderTaken_checkbox',
                                                     id = '$uid'
                             WHERE   id = '$id'");
             $db->execQuery();
@@ -726,6 +773,101 @@ function getPage($res = ''){
                 <label>სოციალური</label>
                 <select id="user_social">'.get_yes_no($res['social']).'</select>
             </div>
+            <div class="col-sm-4">
+                <label>სამუშაო გრაფიკი</label>
+                <select id="user_work_grafik">'.get_grafik_types($res['tbl_schedule_type_id']).'</select>
+            </div>
+            <div class="col-sm-4">
+                <label>სურათი</label>
+                <img id="upProdImg" src="'.$res['avatar'].'" style="width:100px; cursor: pointer;" >
+                <input style="display:none;" type="file" id="product_file">
+            </div>
+            <div class="col-sm-4">
+                <label>ხელშეკრულების ნომერი</label>
+                <input value="'.$res['order_number'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="order_number" class="idle" autocomplete="off">
+            </div>
+
+            <div class="col-sm-4">
+                <label>ხელშეკრულების ფაილი</label>
+                <input style="height: 48px!important;" type="file" id="order_file" class="upload_new_file">
+            </div>
+
+
+            <div class="col-sm-6">
+                <label>რეესტრის ნომერი</label>
+                <input value="'.$res['register_number'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="register_number" class="idle" autocomplete="off">
+            </div>
+
+            <div class="col-sm-6">
+                <label>რეესტრის ფაილი</label>
+                <input style="height: 48px!important;" type="file" id="register_file" class="upload_new_file">
+            </div>';
+
+            $anketa_file = 'display:none;';
+            $instructions_file = 'display:none;';
+            $orderTaken_file = 'display:none;';
+
+            if($res['anketa_checkbox'] == 1){
+                $anket_checkbox = 'checked';
+                $anketa_file = '';
+                if($res['anket_file'] != ''){
+                    $anketa_file_link = $res['anketa_file'];
+                }
+                else{
+                    $anketa_file_link = '#';
+                }
+            }
+            if($res['instructions_checkbox'] == 1){
+                $instructions_checkbox = 'checked';
+                $instructions_file = '';
+
+                if($res['instructions_file'] != ''){
+                    $instructions_file_link = $res['instructions_file'];
+                }
+                else{
+                    $instructions_file_link = '#';
+                }
+            }
+            if($res['orderTaken_checkbox'] == 1){
+                $orderTaken_checkbox = 'checked';
+                $orderTaken_file = '';
+
+                if($res['orderTaken_file'] != ''){
+                    $orderTaken_file_link = $res['orderTaken_file'];
+                }
+                else{
+                    $orderTaken_file_link = '#';
+                }
+            }
+
+            $data .= '            <div class="col-sm-6">
+                <label>ანკეტა <input type="checkbox" id="anketa_checkbox" style="position: absolute;left: 68px;" '.$anket_checkbox.'></label><br>
+                
+
+                <input style="height: 48px!important;'.$anketa_file.'" type="file" id="anketa_file" class="upload_new_file">
+
+
+                <a id="anketa_file_file" href="'.$anketa_file_link.'" style="'.$anketa_file.'" target="_blank"><img style="width:16px;" src="assets/img/file.png"> ნახვა</a>
+            </div>
+
+            <div class="col-sm-6">
+                <label>თანამდებობრივი ინსტრუქცია <input type="checkbox" id="instructions_checkbox" style="position: absolute;left: 240px;" '.$instructions_checkbox.'></label><br>
+                
+
+                <input style="height: 48px!important;'.$instructions_file.'" type="file" id="instructions_file" class="upload_new_file">
+
+                <a id="instructions_file_file" href="'.$instructions_file_link.'" style="'.$instructions_file.'" target="_blank"><img style="width:16px;" src="assets/img/file.png"> ნახვა</a>
+            </div>
+            <div class="col-sm-6">
+                <label>მიღების ბრძანება<input type="checkbox" id="orderTaken_checkbox" style="position: absolute;left: 145px;" '.$orderTaken_checkbox.'></label><br>
+                
+
+                <input style="height: 48px!important;'.$orderTaken_file.'" type="file" id="orderTaken_file" class="upload_new_file">
+
+                <a id="orderTaken_file_file" href="'.$orderTaken_file_link.'" style="'.$orderTaken_file.'" target="_blank"><img style="width:16px;" src="assets/img/file.png"> ნახვა</a>
+            </div>
+
+
 
             
         </div>
@@ -786,6 +928,29 @@ function get_vac_type($id){
                             name AS 'name'
                     FROM    `vacations_type`
                     WHERE   actived = 1");
+    $cats = $db->getResultArray();
+    $data .= '<option value="0" selected="selected">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat[id] == $id){
+            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+        }
+        
+    }
+
+    return $data;
+}
+function get_grafik_types($id){
+    GLOBAL $db,$user_gr;
+
+
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    `tbl_schedule_types`
+                    WHERE   deleted = 1");
     $cats = $db->getResultArray();
     $data .= '<option value="0" selected="selected">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
@@ -874,7 +1039,20 @@ function getObject($id){
                                 users.birth_date,
                                 users.address,
                                 users.social,
-                                users.pension
+                                users.pension,
+                                users.avatar,
+                                users.order_number,
+                                users.order_file,
+                                users.register_number,
+                                users.register_file,
+
+                                users.anketa_checkbox,
+                                users.anketa_file,
+                                users.instructions_checkbox,
+                                users.instructions_file,
+                                users.orderTaken_checkbox,
+                                users.orderTaken_file,
+                                users.tbl_schedule_type_id
 
                     FROM        users
                     WHERE       users.id = '$id'");
