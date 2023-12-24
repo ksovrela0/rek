@@ -18,7 +18,7 @@
 	<!-- Favicon -->
 	<!-- <link rel="icon" href="assets/img/brand/logo.png" type="image/x-icon"> -->
 	<!-- Title -->
-	<title>თანამშრომლები</title>
+	<title>გათავისუფლებულები</title>
 	<!---Fontawesome css-->
 	<?php include('includes/functions.php'); ?>
 	<script type="text/javascript">
@@ -188,10 +188,10 @@
 				<!-- Page Header -->
 				<div class="page-header">
 					<div>
-						<h2 class="main-content-title tx-24 mg-b-5">თანამშრომლები</h2>
+						<h2 class="main-content-title tx-24 mg-b-5">გათავისუფლებულები</h2>
 						<ol class="breadcrumb">
 							<li class="breadcrumb-item"><a href="#">პარამეტრები</a></li>
-							<li class="breadcrumb-item active" aria-current="page">პერსონალი</li>
+							<li class="breadcrumb-item active" aria-current="page">გათავისუფლებულები</li>
 						</ol>
 					</div>
 				</div>
@@ -460,45 +460,7 @@
 		}
 		
 	});
-	$(document).on("dblclick", "#users tr.k-state-selected", function () {
-		var grid = $("#users").data("kendoGrid");
-		var dItem = grid.dataItem($(this));
-		
-		if(dItem.id == ''){
-			return false;
-		}
-		
-		$.ajax({
-			url: aJaxURL,
-			type: "POST",
-			data: {
-				act: "get_edit_page",
-				id: dItem.id
-			},
-			dataType: "json",
-			success: function(data){
-				$('#get_edit_page').html(data.page);
-                $("#user_group,#user_pension,#user_social,#user_work_grafik").chosen();
-				GetDate('birth_date');
-                var obj_id = "&obj_id="+dItem.id;
-                LoadKendoTable_branches(obj_id);
-				$("#get_edit_page").dialog({
-					resizable: false,
-					height: 1000,
-					width: 900,
-					modal: true,
-					buttons: {
-						"შენახვა": function() {
-							save_category();
-						},
-						'დახურვა': function() {
-							$( this ).dialog( "close" );
-						}
-					}
-				});
-			}
-		});
-	});
+	
 	$(document).on('click','#button_add',function(){
 		$.ajax({
 			url: aJaxURL,
@@ -537,19 +499,6 @@
 			success: function (data) {
 				$("#upProdImg").attr("src", 'assets/img/no_avatar.png');
 				$("#avatar_del").css('display','none');
-			}
-		});
-	})
-	$(document).on("keyup",'#pid', function(){
-		$.ajax({
-			url: aJaxURL,
-			type: "POST",
-			data: "act=check_pid&pid=" + $("#pid").val(),
-			dataType: "json",
-			success: function (data) {
-				if(data.pid_cc > 0){
-					alert("თანამშრომელი მსგავსი პირადობით უკვე არსებობს");
-				}
 			}
 		});
 	})
@@ -631,6 +580,29 @@
 		
 		
 	});
+    
+    $(document).on('click','#button_revive',function(){
+		if(confirm("ნამდვილად გსურთ მონიშნული თანამშრომლების აღდგენა?")){
+			var removeIDS = [];
+			var entityGrid = $("#users").data("kendoGrid");
+			var rows = entityGrid.select();
+			rows.each(function(index, row) {
+				var selectedItem = entityGrid.dataItem(row);
+				// selectedItem has EntityVersionId and the rest of your model
+				removeIDS.push(selectedItem.id);
+			});
+			$.ajax({
+				url: aJaxURL,
+				type: "POST",
+				data: "act=revive&id=" + removeIDS,
+				dataType: "json",
+				success: function (data) {
+					$("#users").data("kendoGrid").dataSource.read();
+				}
+			});
+		}
+		
+	});
 	$(document).on('click','#button_trash',function(){
 		if(confirm("ნამდვილად გსურთ მონიშნული თანამშრომლების წაშლა?")){
 			var removeIDS = [];
@@ -706,10 +678,10 @@
 		//KendoUI CLASS CONFIGS BEGIN
 		var aJaxURL	        =   "server-side/users.action.php";
 		var gridName        = 	'users';
-		var actions         = 	'<div class="btn btn-list"><a id="button_add" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> დამატება</a><a id="button_trash" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> წაშლა</a><a id="button_lay_off" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-trash"></i> გათავისუფლება</a></div>';
+		var actions         = 	'<div class="btn btn-list"><a id="button_revive" style="color:white;" class="btn ripple btn-primary"><i class="fas fa-plus-square"></i> აღდგენა</a></div>';
 		var editType        =   "popup"; // Two types "popup" and "inline"
 		var itemPerPage     = 	20;
-		var columnsCount    =	12;
+		var columnsCount    =	8;
 		var columnsSQL      = 	[
 									"id:string",
                                     "group:string",
@@ -718,12 +690,8 @@
                                     "pid:string",
                                     "phone:string",
                                     
-                                    "birth_date:string",
-                                    "address:string",
-                                    "pension:string",
-                                    "social:string",
-                                    "photo:string",
-									"up_files:string",
+                                    "reason_text:string",
+                                    "reason_order:string"
 									
 								];
 		var columnGeoNames  = 	[
@@ -733,12 +701,8 @@
                                     "პოზიცია",
                                     "პ/ნ",
 									"ტელეფონი",
-                                    "დაბადების თარიღი",
-									"მისამართი",
-                                    "საპენსიო",
-                                    "სოციალური",
-									"სურათი",
-									"ფაილები"
+                                    "მიზეზი",
+									"ბრძანება"
 								];
 
 		var showOperatorsByColumns  =   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; 
@@ -751,7 +715,7 @@
 		//KendoUI CLASS CONFIGS END
 			
 		const kendo = new kendoUI();
-		kendo.loadKendoUI(aJaxURL,'get_list',itemPerPage,columnsCount,columnsSQL,gridName,actions,editType,columnGeoNames,filtersCustomOperators,showOperatorsByColumns,selectors,hidden, 1, locked, lockable);
+		kendo.loadKendoUI(aJaxURL,'get_list_layoff',itemPerPage,columnsCount,columnsSQL,gridName,actions,editType,columnGeoNames,filtersCustomOperators,showOperatorsByColumns,selectors,hidden, 1, locked, lockable);
 
 	}
 	$(document).on('click','#upload_img',function(){

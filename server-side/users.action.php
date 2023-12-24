@@ -15,6 +15,10 @@ switch ($act){
         $id = $_REQUEST['id'];
         $data = array('page' => getPage());
     break;
+    case 'get_layoff_page':
+        $user_id = $_REQUEST['user_id'];
+        $data = array('page' => getLayoffPage($user_id));
+    break;
     case 'get_edit_page_h':
         $id = $_REQUEST['id'];
         $data = array('page' => getPageH(getHoliday($id)));
@@ -33,7 +37,20 @@ switch ($act){
         $id = $_REQUEST['id'];
         $data = array('page' => getPageDayoff(getDayoff($id)));
     break;
+    case 'delete_file':
+        $type = $_REQUEST['type'];
+        $id = $_REQUEST['id'];
 
+        if($type == "avatar"){
+            $db->setQuery("UPDATE users SET avatar = '' WHERE id = '$id'");
+            $db->execQuery();
+        }
+        break;
+    case 'check_pid':
+        $pid =  $_REQUEST['pid'];
+        $db->setQuery("SELECT COUNT(*) AS cc FROM users WHERE pid = '$pid' AND actived = 1");
+        $data['pid_cc'] = $db->getResultArray()['result'][0]['cc'];
+    break;
     case 'save_holiday':
         $id = $_REQUEST['id'];
 
@@ -242,6 +259,14 @@ switch ($act){
             $db->execQuery();
         }
     break;
+    case 'layoff':
+        $user_id = $_REQUEST['user_id'];
+        $layoff_reason = $_REQUEST['layoff_reason'];
+
+
+        $db->setQuery("UPDATE users SET layoffed = 1, layoff_reason = '$layoff_reason', layoff_datetime = NOW() WHERE id = '$user_id'");
+        $db->execQuery();
+    break;
     case 'disable_h':
         $ids = $_REQUEST['id'];
         $ids = explode(',',$ids);
@@ -257,6 +282,16 @@ switch ($act){
 
         foreach($ids AS $id){
             $db->setQuery("UPDATE users SET actived = 0 WHERE id = '$id'");
+            $db->execQuery();
+        }
+    break;
+
+    case 'revive':
+        $ids = $_REQUEST['id'];
+        $ids = explode(',',$ids);
+
+        foreach($ids AS $id){
+            $db->setQuery("UPDATE users SET layoffed = 0 WHERE id = '$id'");
             $db->execQuery();
         }
     break;
@@ -555,6 +590,34 @@ switch ($act){
         $result = $db->getKendoList($columnCount, $cols);
         $data = $result;
     break;
+    case 'get_list_layoff':
+        $id          =      $_REQUEST['hidden'];
+		
+        $columnCount = 		$_REQUEST['count'];
+		$cols[]      =      $_REQUEST['cols'];
+        if($user_gr == 11){
+            $where = "AND `groups`.id NOT IN (1,10,11,12,13,14,15)";
+        }
+            $db->setQuery("SELECT   users.id,
+                                    `groups`.name,
+                                    CONCAT(users.firstname,' ', users.lastname),
+                                    users.position,
+                                    users.pid,
+                                    users.phone,
+                                    users.layoff_reason,
+                                    
+
+                                    CONCAT(
+                                        IF(users.layoff_order_file IS NULL OR users.layoff_order_file = '','-<br>',CONCAT('<a href=\"',users.layoff_order_file,'\" target=\"_blank\" style=\"font-size:14px;text-decoration: underline;\"><img style=\"width:18px;\" src=\"assets/img/file.png?v=1.3\"> ბრძანება</a><br>'))
+                                    )
+                                    
+                            FROM users
+                            JOIN `groups` ON `groups`.id = users.group_id
+                            WHERE users.actived = 1 AND users.layoffed = 1");
+
+        $result = $db->getKendoList($columnCount, $cols);
+        $data = $result;
+    break;
     case 'get_list':
         $id          =      $_REQUEST['hidden'];
 		
@@ -572,11 +635,23 @@ switch ($act){
                                     users.birth_date,
                                     users.address,
                                     IF(users.pension = 1, 'კი', 'არა'),
-                                    IF(users.social = 1, 'კი', 'არა')
+                                    IF(users.social = 1, 'კი', 'არა'),
+                                    CASE
+                                        WHEN users.avatar IS NULL OR users.avatar = '' THEN '<img src=\"assets/img/no_avatar.png\" style=\"width:100px;\">'
+                                        ELSE CONCAT('<img src=\"',users.avatar,'\" style=\"width:100px;\">')
+                                    END AS ph,
+
+                                    CONCAT(
+                                        IF(users.order_file IS NULL OR users.order_file = '','-<br>',CONCAT('<a href=\"',users.order_file,'\" target=\"_blank\" style=\"font-size:14px;text-decoration: underline;\"><img style=\"width:18px;\" src=\"assets/img/file.png?v=1.3\"> ხელშეკრულება</a><br>')),
+                                        IF(users.register_file IS NULL OR users.register_file = '','-<br>',CONCAT('<a href=\"',users.register_file,'\" target=\"_blank\" style=\"font-size:14px;text-decoration: underline;\"><img style=\"width:18px;\" src=\"assets/img/file.png?v=1.3\"> რეესტრის ფაილი</a><br>')),
+                                        IF(users.anketa_file IS NULL OR users.anketa_file = '','-<br>',CONCAT('<a href=\"',users.anketa_file,'\" target=\"_blank\" style=\"font-size:14px;text-decoration: underline;\"><img style=\"width:18px;\" src=\"assets/img/file.png?v=1.3\"> ანკეტა</a><br>')),
+                                        IF(users.instructions_file IS NULL OR users.instructions_file = '','-<br>',CONCAT('<a href=\"',users.instructions_file,'\" target=\"_blank\" style=\"font-size:14px;text-decoration: underline;\"><img style=\"width:18px;\" src=\"assets/img/file.png?v=1.3\"> თანამ. ინსტრ.</a><br>')),
+                                        IF(users.orderTaken_file IS NULL OR users.orderTaken_file = '','-<br>',CONCAT('<a href=\"',users.orderTaken_file,'\" target=\"_blank\" style=\"font-size:14px;text-decoration: underline;\"><img style=\"width:18px;\" src=\"assets/img/file.png?v=1.3\"> მიღ. ბრძ.</a><br>'))
+                                    )
                                     
                             FROM users
                             JOIN `groups` ON `groups`.id = users.group_id
-                            WHERE users.actived = 1");
+                            WHERE users.actived = 1 AND users.layoffed = 0");
 
         $result = $db->getKendoList($columnCount, $cols);
         $data = $result;
@@ -638,6 +713,31 @@ function getPageH($res = ''){
 
     return $data;
 }
+function getLayoffPage($user_id){
+    $data .= '
+    
+    
+    <fieldset class="fieldset">
+        <legend>ინფორმაცია</legend>
+        <div class="row">
+            <div class="col-sm-12" >
+                <label>კომენტარი</label>
+                <textarea style="width:100%;" id="layoff_reason"></textarea>
+            </div>
+            <div class="col-sm-12" >
+                <label>ბრძანება</label>
+                <input style="height: 48px!important;" type="file" id="layoff_order_file" class="upload_new_file">
+            </div>
+            
+            
+        </div>
+    </fieldset>
+    
+    <input type="hidden" id="user_id" value="'.$user_id.'">
+    ';
+
+    return $data;
+}
 function getPageDayoff($res = ''){
     $data .= '
     
@@ -689,23 +789,23 @@ function getPageGrafik($res = ''){
             </div>
             <div class="col-sm-4" >
                 <label>დაწყების დრო</label>
-                <input value="'.$res['plan_in'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="plan_in" class="idle" autocomplete="off">
+                <input value="'.$res['plan_in'].'" data-nec="0" style="height: 18px; width: 95%;" type="time" id="plan_in" class="idle" autocomplete="off">
             </div>
             <div class="col-sm-4" >
                 <label>დაგვიანების ათვლა წუთებში</label>
-                <input value="'.$res['latecome'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="latecome" class="idle" autocomplete="off">
+                <input value="'.$res['latecome'].'" data-nec="0" style="height: 18px; width: 95%;" type="number" id="latecome" class="idle" autocomplete="off">
             </div>
             <div class="col-sm-4" >
                 <label>მინ სამუშაო საათები (წუთებში)</label>
-                <input value="'.$res['min_working_minutes'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="min_working_minutes" class="idle" autocomplete="off">
+                <input value="'.$res['min_working_minutes'].'" data-nec="0" style="height: 18px; width: 95%;" type="number" id="min_working_minutes" class="idle" autocomplete="off">
             </div>
             <div class="col-sm-4" >
-                <label>სავალდებულო სამუშაო საათები</label>
-                <input value="'.$res['working_minutes'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="working_minutes" class="idle" autocomplete="off">
+                <label>სავ. სამუშაო საათები (წუთებში)</label>
+                <input value="'.$res['working_minutes'].'" data-nec="0" style="height: 18px; width: 95%;" type="number" id="working_minutes" class="idle" autocomplete="off">
             </div>
             <div class="col-sm-4" >
                 <label>შვებულებები</label>
-                <input value="'.$res['vacation_days'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="vacation_days" class="idle" autocomplete="off">
+                <input value="'.$res['vacation_days'].'" data-nec="0" style="height: 18px; width: 95%;" type="number" id="vacation_days" class="idle" autocomplete="off">
             </div>
 
             
@@ -721,6 +821,10 @@ function getPage($res = ''){
     GLOBAL $user_gr;
     if($user_gr == 11){
         $hide = 'style="display:none;"';
+    }
+
+    if($res == ''){
+        $disable_fields = 'style="display:none;"';
     }
 
     $data .= '
@@ -777,33 +881,61 @@ function getPage($res = ''){
                 <label>სამუშაო გრაფიკი</label>
                 <select id="user_work_grafik">'.get_grafik_types($res['tbl_schedule_type_id']).'</select>
             </div>
-            <div class="col-sm-4">
-                <label>სურათი</label>
-                <img id="upProdImg" src="'.$res['avatar'].'" style="width:100px; cursor: pointer;" >
+            <div class="col-sm-4" '.$disable_fields.'>';
+            if($res['avatar'] == '' OR !file_exists('../'.$res['avatar'])){
+                $avatar = 'assets/img/no_avatar.png';
+
+                $disable_avatar_del = "display:none;";
+            }
+            else{
+                $avatar = $res['avatar'];
+            }
+                $data .= '
+                <label>სურათი <span id="avatar_del" style="'.$disable_avatar_del.'color:red;cursor:pointer;font-size: 20px;font-weight: bold;">X<span></label><br>
+                <img id="upProdImg" src="'.$avatar.'" style="width:100px; cursor: pointer;" >
                 <input style="display:none;" type="file" id="product_file">
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-4" '.$disable_fields.'>
                 <label>ხელშეკრულების ნომერი</label>
                 <input value="'.$res['order_number'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="order_number" class="idle" autocomplete="off">
             </div>
 
-            <div class="col-sm-4">
+            <div class="col-sm-4" '.$disable_fields.'>
                 <label>ხელშეკრულების ფაილი</label>
-                <input style="height: 48px!important;" type="file" id="order_file" class="upload_new_file">
-                <a id="order_file_file" href="'.$res['order_file'].'" target="_blank"><img style="width:16px;" src="assets/img/file.png"> ნახვა</a>
+                <input style="height: 48px!important;" type="file" id="order_file" class="upload_new_file">';
+
+                if($res['order_file'] == ''){
+                    $display_order_file = 'display: none;';
+                }
+                $data .= '<a id="order_file_file" href="'.$res['order_file'].'" target="_blank" style="'.$display_order_file.'font-weight:bold;text-decoration: underline;"><img style="width:24px;" src="assets/img/file.png?v=1.3"> ხელშეკრულება</a>';
+                
+            $data .= '</div>
+        
+            <div class="col-md-12" '.$disable_fields.' style="margin-bottom: 30px;">
+                <hr style="border-top: 2px solid;">
             </div>
 
-
-            <div class="col-sm-6">
+            <div class="col-sm-6" '.$disable_fields.'>
                 <label>რეესტრის ნომერი</label>
                 <input value="'.$res['register_number'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="register_number" class="idle" autocomplete="off">
             </div>
 
-            <div class="col-sm-6">
+            <div class="col-sm-6" '.$disable_fields.'>
                 <label>რეესტრის ფაილი</label>
-                <input style="height: 48px!important;" type="file" id="register_file" class="upload_new_file">
-                <a id="register_file_file" href="'.$res['register_file'].'" target="_blank"><img style="width:16px;" src="assets/img/file.png"> ნახვა</a>
-            </div>';
+                <input style="height: 48px!important;" type="file" id="register_file" class="upload_new_file"><br>';
+                if($res['register_file'] == ''){
+                    $display_register_file = 'display: none;';
+                    
+                }
+                $data .= '<a id="register_file_file" href="'.$res['register_file'].'" target="_blank" style="'.$display_register_file.'font-weight:bold;text-decoration: underline;"><img style="width:24px;" src="assets/img/file.png?v=1.3"> რეესტრის ფაილი</a>';
+            $data .= '</div>
+            
+            <div class="col-md-12" '.$disable_fields.' style="margin-bottom: 30px;">
+                <hr style="border-top: 2px solid;">
+            </div>
+            ';
+
+            
 
             $anketa_file = 'display:none;';
             $instructions_file = 'display:none;';
@@ -812,62 +944,88 @@ function getPage($res = ''){
             if($res['anketa_checkbox'] == 1){
                 $anket_checkbox = 'checked';
                 $anketa_file = '';
-                if($res['anket_file'] != ''){
-                    $anketa_file_link = $res['anketa_file'];
-                }
-                else{
-                    $anketa_file_link = '#';
-                }
+                
             }
+            if($res['anketa_file'] != ''){
+                $anketa_file_link = $res['anketa_file'];
+            }
+            else{
+                $anketa_file_link = '#';
+            }
+
+
+
             if($res['instructions_checkbox'] == 1){
                 $instructions_checkbox = 'checked';
                 $instructions_file = '';
 
-                if($res['instructions_file'] != ''){
-                    $instructions_file_link = $res['instructions_file'];
-                }
-                else{
-                    $instructions_file_link = '#';
-                }
+                
             }
+            if($res['instructions_file'] != ''){
+                $instructions_file_link = $res['instructions_file'];
+            }
+            else{
+                $instructions_file_link = '#';
+            }
+
+
+
             if($res['orderTaken_checkbox'] == 1){
                 $orderTaken_checkbox = 'checked';
                 $orderTaken_file = '';
 
-                if($res['orderTaken_file'] != ''){
-                    $orderTaken_file_link = $res['orderTaken_file'];
-                }
-                else{
-                    $orderTaken_file_link = '#';
-                }
+                
+            }
+            if($res['orderTaken_file'] != ''){
+                $orderTaken_file_link = $res['orderTaken_file'];
+            }
+            else{
+                $orderTaken_file_link = '#';
             }
 
-            $data .= '            <div class="col-sm-6">
+            $display_anketa_file = 'display: none;';
+            $display_instructions_file = 'display:none;';
+            $display_orderTaken_file = 'display: none;';
+            $data .= '            
+            
+            
+            <div class="col-sm-6" '.$disable_fields.'>
                 <label>ანკეტა <input type="checkbox" id="anketa_checkbox" style="position: absolute;left: 68px;" '.$anket_checkbox.'></label><br>
                 
 
-                <input style="height: 48px!important;'.$anketa_file.'" type="file" id="anketa_file" class="upload_new_file">
+                <input style="height: 48px!important;'.$anketa_file.'" type="file" id="anketa_file" class="upload_new_file"><br>';
+                if($anket_checkbox == 'checked' && $res['anketa_file'] != ''){
+                    $display_anketa_file = 'display: block;';
+                    
+                }
+                $data .= '<a id="anketa_file_file" href="'.$anketa_file_link.'" target="_blank" style="'.$display_anketa_file.'font-weight:bold;text-decoration: underline;"><img style="width:24px;" src="assets/img/file.png?v=1.3"> ანკეტა</a>';
+            $data .= '</div>
 
-
-                <a id="anketa_file_file" href="'.$anketa_file_link.'" style="'.$anketa_file.'" target="_blank"><img style="width:16px;" src="assets/img/file.png"> ნახვა</a>
-            </div>
-
-            <div class="col-sm-6">
+            <div class="col-sm-6" '.$disable_fields.'>
                 <label>თანამდებობრივი ინსტრუქცია <input type="checkbox" id="instructions_checkbox" style="position: absolute;left: 240px;" '.$instructions_checkbox.'></label><br>
                 
 
-                <input style="height: 48px!important;'.$instructions_file.'" type="file" id="instructions_file" class="upload_new_file">
-
-                <a id="instructions_file_file" href="'.$instructions_file_link.'" style="'.$instructions_file.'" target="_blank"><img style="width:16px;" src="assets/img/file.png"> ნახვა</a>
+                <input style="height: 48px!important;'.$instructions_file.'" type="file" id="instructions_file" class="upload_new_file"><br>';
+                if($instructions_checkbox == 'checked' && $res['instructions_file'] != '' ){
+                    $display_instructions_file = 'display: block;';
+                    
+                }
+                $data .= '<a id="instructions_file_file" href="'.$instructions_file_link.'" target="_blank" style="'.$display_instructions_file.'font-weight:bold;text-decoration: underline;"><img style="width:24px;" src="assets/img/file.png?v=1.3"> თანამ. ინსტრუქცია</a>';
+            $data .= '</div>
+            <div class="col-md-12" '.$disable_fields.' style="margin-bottom: 8px;">
+                <hr style="border-top: 2px solid;">
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-6" '.$disable_fields.'>
                 <label>მიღების ბრძანება<input type="checkbox" id="orderTaken_checkbox" style="position: absolute;left: 145px;" '.$orderTaken_checkbox.'></label><br>
                 
 
-                <input style="height: 48px!important;'.$orderTaken_file.'" type="file" id="orderTaken_file" class="upload_new_file">
-
-                <a id="orderTaken_file_file" href="'.$orderTaken_file_link.'" style="'.$orderTaken_file.'" target="_blank"><img style="width:16px;" src="assets/img/file.png"> ნახვა</a>
-            </div>
+                <input style="height: 48px!important;'.$orderTaken_file.'" type="file" id="orderTaken_file" class="upload_new_file"><br>';
+                if($orderTaken_checkbox == 'checked' && $res['orderTaken_file'] != ''){
+                    $display_orderTaken_file = 'display: block;';
+                    
+                }
+                $data .= '<a id="orderTaken_file_file" href="'.$orderTaken_file_link.'" target="_blank" style="'.$display_orderTaken_file.'font-weight:bold;text-decoration: underline;"><img style="width:24px;" src="assets/img/file.png?v=1.3"> მიღების ბრძანება</a>';
+            $data .= '</div>
 
 
 

@@ -94,6 +94,12 @@ else if($act == 'upload_new_file'){
                                         WHERE   id='$user_id'");
                         $db->execQuery();
                     break;
+                    case 'layoff_order_file':
+                        $db->setQuery(" UPDATE  users 
+                                        SET     layoff_order_file='$pic'
+                                        WHERE   id='$user_id'");
+                        $db->execQuery();
+                    break;
                 }
                 
             }
