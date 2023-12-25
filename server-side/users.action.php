@@ -200,7 +200,7 @@ switch ($act){
                                                     `group_id` = '$group_id',
                                                     username = '$username',
                                                     password = '$password',
-                                                    position = '$position',
+                                                    position_id = '$position',
                                                     birth_date = '$birth_date',
                                                     `address` = '$address',
                                                     pension = '$user_pension',
@@ -225,18 +225,18 @@ switch ($act){
                                                 `group_id` = '$group_id',
                                                 username = '$username',
                                                 password = '$password',
-                                                    position = '$position',
-                                                    birth_date = '$birth_date',
-                                                    `address` = '$address',
-                                                    pension = '$user_pension',
-                                                    social = '$user_social',
-                                                    tbl_schedule_type_id = '$tbl_shecdule_type_id',
-                                                    order_number = '$order_number',
-                                                    register_number = '$register_number',
-                                                    anketa_checkbox = '$anketa_checkbox',
-                                                    instructions_checkbox = '$instructions_checkbox',
-                                                    orderTaken_checkbox = '$orderTaken_checkbox',
-                                                    id = '$uid'
+                                                position_id = '$position',
+                                                birth_date = '$birth_date',
+                                                `address` = '$address',
+                                                pension = '$user_pension',
+                                                social = '$user_social',
+                                                tbl_schedule_type_id = '$tbl_shecdule_type_id',
+                                                order_number = '$order_number',
+                                                register_number = '$register_number',
+                                                anketa_checkbox = '$anketa_checkbox',
+                                                instructions_checkbox = '$instructions_checkbox',
+                                                orderTaken_checkbox = '$orderTaken_checkbox',
+                                                id = '$uid'
                             WHERE   id = '$id'");
             $db->execQuery();
         }
@@ -859,7 +859,7 @@ function getPage($res = ''){
             </div>
             <div class="col-sm-4" '.$hide.'>
                 <label>პოზიცია</label>
-                <input value="'.$res['position'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="position" class="idle" autocomplete="off">
+                <select id="position">'.get_position($res['position_id']).'</select>
             </div>
             <div class="col-sm-4" '.$hide.'>
                 <label>მისამართი</label>
@@ -1068,11 +1068,34 @@ function get_users($id){
     $cats = $db->getResultArray();
     $data .= '<option value="0" selected="selected">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
+        }
+        
+    }
+
+    return $data;
+}
+function get_position($id){
+    GLOBAL $db,$user_gr;
+
+
+    $data = '';
+    $db->setQuery("SELECT   id,
+                            name AS 'name'
+                    FROM    `positions`
+                    WHERE   actived = 1");
+    $cats = $db->getResultArray();
+    $data .= '<option value="0" selected="selected">აირჩიეთ</option>';
+    foreach($cats['result'] AS $cat){
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
+        }
+        else{
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
         
     }
@@ -1092,10 +1115,10 @@ function get_vac_type($id){
     $data .= '<option value="0" selected="selected">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
         if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
         
     }
@@ -1114,11 +1137,11 @@ function get_grafik_types($id){
     $cats = $db->getResultArray();
     $data .= '<option value="0" selected="selected">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
         
     }
@@ -1139,11 +1162,11 @@ function get_cat_1($id){
     $cats = $db->getResultArray();
     $data .= '<option value="0" selected="selected">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
         
     }

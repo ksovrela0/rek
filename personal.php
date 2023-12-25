@@ -478,7 +478,7 @@
 			dataType: "json",
 			success: function(data){
 				$('#get_edit_page').html(data.page);
-                $("#user_group,#user_pension,#user_social,#user_work_grafik").chosen();
+                $("#user_group,#user_pension,#user_social,#user_work_grafik,#position").chosen();
 				GetDate('birth_date');
                 var obj_id = "&obj_id="+dItem.id;
                 LoadKendoTable_branches(obj_id);
@@ -509,7 +509,7 @@
 			dataType: "json",
 			success: function(data){
 				$('#get_edit_page').html(data.page);
-				$("#user_group,#user_pension,#user_social,#user_work_grafik").chosen();
+				$("#user_group,#user_pension,#user_social,#user_work_grafik,#position").chosen();
 				GetDate('birth_date');
 				$("#get_edit_page").dialog({
 					resizable: false,
