@@ -732,11 +732,11 @@ function getUserGroups($id){
     $cats = $db->getResultArray();
 	$data .= '<option value="">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
-            $data .= '<option value="'.$cat[id].'" selected="selected">'.$cat[name].'</option>';
+        if($cat['id'] == $id){
+            $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
-            $data .= '<option value="'.$cat[id].'">'.$cat[name].'</option>';
+            $data .= '<option value="'.$cat['id'].'">'.$cat['name'].'</option>';
         }
     }
     echo $data;
