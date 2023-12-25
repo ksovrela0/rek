@@ -45,6 +45,26 @@ switch ($act){
             $db->setQuery("UPDATE users SET avatar = '' WHERE id = '$id'");
             $db->execQuery();
         }
+        else if($type == "instructions_file"){
+            $db->setQuery("UPDATE users SET instructions_file = '' WHERE id = '$id'");
+            $db->execQuery();
+        }
+        else if($type == "anketa_file"){
+            $db->setQuery("UPDATE users SET anketa_file = '' WHERE id = '$id'");
+            $db->execQuery();
+        }
+        else if($type == "orderTaken_file"){
+            $db->setQuery("UPDATE users SET orderTaken_file = '' WHERE id = '$id'");
+            $db->execQuery();
+        }
+        else if($type == "register_file"){
+            $db->setQuery("UPDATE users SET register_file = '' WHERE id = '$id'");
+            $db->execQuery();
+        }
+        else if($type == "order_file"){
+            $db->setQuery("UPDATE users SET order_file = '' WHERE id = '$id'");
+            $db->execQuery();
+        }
         break;
     case 'check_pid':
         $pid =  $_REQUEST['pid'];
@@ -908,7 +928,7 @@ function getPage($res = ''){
                 if($res['order_file'] == ''){
                     $display_order_file = 'display: none;';
                 }
-                $data .= '<a id="order_file_file" href="'.$res['order_file'].'" target="_blank" style="'.$display_order_file.'font-weight:bold;text-decoration: underline;"><img style="width:24px;" src="assets/img/file.png?v=1.3"> ხელშეკრულება</a>';
+                $data .= '<a id="order_file_file" href="'.$res['order_file'].'" target="_blank" style="'.$display_order_file.'font-weight:bold;text-decoration: underline;"><img style="width:24px;" src="assets/img/file.png?v=1.3"> ხელშეკრულება </a><span id="order_file_del" style="'.$display_order_file.'color:red;cursor:pointer;font-size: 20px;font-weight: bold;margin-left:10px;">X<span>';
                 
             $data .= '</div>
         
@@ -928,7 +948,7 @@ function getPage($res = ''){
                     $display_register_file = 'display: none;';
                     
                 }
-                $data .= '<a id="register_file_file" href="'.$res['register_file'].'" target="_blank" style="'.$display_register_file.'font-weight:bold;text-decoration: underline;"><img style="width:24px;" src="assets/img/file.png?v=1.3"> რეესტრის ფაილი</a>';
+                $data .= '<a id="register_file_file" href="'.$res['register_file'].'" target="_blank" style="'.$display_register_file.'font-weight:bold;text-decoration: underline;"><img style="width:24px;" src="assets/img/file.png?v=1.3"> რეესტრის ფაილი</a><span id="register_file_del" style="'.$display_register_file.'color:red;cursor:pointer;font-size: 20px;font-weight: bold;margin-left:10px;">X<span>';
             $data .= '</div>
             
             <div class="col-md-12" '.$disable_fields.' style="margin-bottom: 30px;">
@@ -999,7 +1019,7 @@ function getPage($res = ''){
                     $display_anketa_file = 'display: block;';
                     
                 }
-                $data .= '<a id="anketa_file_file" href="'.$anketa_file_link.'" target="_blank" style="'.$display_anketa_file.'font-weight:bold;text-decoration: underline;"><img style="width:24px;" src="assets/img/file.png?v=1.3"> ანკეტა</a>';
+                $data .= '<a id="anketa_file_file" href="'.$anketa_file_link.'" target="_blank" style="'.$display_anketa_file.'font-weight:bold;text-decoration: underline;"><img style="width:24px;" src="assets/img/file.png?v=1.3"> ანკეტა</a><span id="anketa_file_del" style="'.$display_anketa_file.'color:red;cursor:pointer;font-size: 20px;font-weight: bold;margin-left:10px;">X<span>';
             $data .= '</div>
 
             <div class="col-sm-6" '.$disable_fields.'>
@@ -1011,7 +1031,7 @@ function getPage($res = ''){
                     $display_instructions_file = 'display: block;';
                     
                 }
-                $data .= '<a id="instructions_file_file" href="'.$instructions_file_link.'" target="_blank" style="'.$display_instructions_file.'font-weight:bold;text-decoration: underline;"><img style="width:24px;" src="assets/img/file.png?v=1.3"> თანამ. ინსტრუქცია</a>';
+                $data .= '<a id="instructions_file_file" href="'.$instructions_file_link.'" target="_blank" style="'.$display_instructions_file.'font-weight:bold;text-decoration: underline;"><img style="width:24px;" src="assets/img/file.png?v=1.3"> თანამ. ინსტრუქცია</a><span id="instructions_file_del" style="'.$display_instructions_file.'color:red;cursor:pointer;font-size: 20px;font-weight: bold;margin-left:10px;">X<span>';
             $data .= '</div>
             <div class="col-md-12" '.$disable_fields.' style="margin-bottom: 8px;">
                 <hr style="border-top: 2px solid;">
@@ -1025,7 +1045,7 @@ function getPage($res = ''){
                     $display_orderTaken_file = 'display: block;';
                     
                 }
-                $data .= '<a id="orderTaken_file_file" href="'.$orderTaken_file_link.'" target="_blank" style="'.$display_orderTaken_file.'font-weight:bold;text-decoration: underline;"><img style="width:24px;" src="assets/img/file.png?v=1.3"> მიღების ბრძანება</a>';
+                $data .= '<a id="orderTaken_file_file" href="'.$orderTaken_file_link.'" target="_blank" style="'.$display_orderTaken_file.'font-weight:bold;text-decoration: underline;"><img style="width:24px;" src="assets/img/file.png?v=1.3"> მიღების ბრძანება</a><span id="orderTaken_file_del" style="'.$display_orderTaken_file.'color:red;cursor:pointer;font-size: 20px;font-weight: bold;margin-left:10px;">X<span>';
             $data .= '</div>
 
 

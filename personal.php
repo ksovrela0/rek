@@ -398,6 +398,7 @@
 							//$("#upProdImg").attr("src", data.src);
 							//$('#id_attr').parent().append(``)
 							$("#"+id_attr).parent().find("a").attr('href',data.src).css('display','block')
+							$("#"+id_attr).parent().find("span").css('display','block')
 							alert("ფაილი ატვირთულია");
 						}
 						else{
@@ -540,6 +541,72 @@
 			}
 		});
 	})
+
+
+	$(document).on('click','#order_file_del', function(){
+		$.ajax({
+			url: aJaxURL,
+			type: "POST",
+			data: "act=delete_file&type=order_file&id=" + $("#user_id").val(),
+			dataType: "json",
+			success: function (data) {
+				$("#order_file_file,#order_file_del").css('display','none');
+			}
+		});
+	})
+
+
+	$(document).on('click','#register_file_del', function(){
+		$.ajax({
+			url: aJaxURL,
+			type: "POST",
+			data: "act=delete_file&type=register_file&id=" + $("#user_id").val(),
+			dataType: "json",
+			success: function (data) {
+				$("#register_file_file,#register_file_del").css('display','none');
+			}
+		});
+	})
+
+
+	$(document).on('click','#anketa_file_del', function(){
+		$.ajax({
+			url: aJaxURL,
+			type: "POST",
+			data: "act=delete_file&type=anketa_file&id=" + $("#user_id").val(),
+			dataType: "json",
+			success: function (data) {
+				$("#anketa_file_file,#anketa_file_del").css('display','none');
+			}
+		});
+	})
+
+	$(document).on('click','#instructions_file_del', function(){
+		$.ajax({
+			url: aJaxURL,
+			type: "POST",
+			data: "act=delete_file&type=instructions_file&id=" + $("#user_id").val(),
+			dataType: "json",
+			success: function (data) {
+				$("#instructions_file_file,#instructions_file_del").css('display','none');
+			}
+		});
+	})
+
+
+	$(document).on('click','#orderTaken_file_del', function(){
+		$.ajax({
+			url: aJaxURL,
+			type: "POST",
+			data: "act=delete_file&type=orderTaken_file&id=" + $("#user_id").val(),
+			dataType: "json",
+			success: function (data) {
+				$("#orderTaken_file_file,#orderTaken_file_del").css('display','none');
+			}
+		});
+	})
+
+
 	$(document).on("keyup",'#pid', function(){
 		$.ajax({
 			url: aJaxURL,
