@@ -629,7 +629,7 @@ switch ($act){
             $db->setQuery("SELECT   users.id,
                                     `groups`.name,
                                     CONCAT(users.firstname,' ', users.lastname),
-                                    users.position,
+                                    positions.name,
                                     users.pid,
                                     users.phone,
                                     users.birth_date,
@@ -651,6 +651,7 @@ switch ($act){
                                     
                             FROM users
                             JOIN `groups` ON `groups`.id = users.group_id
+                            LEFT JOIN positions ON positions.id = users.position_id
                             WHERE users.actived = 1 AND users.layoffed = 0");
 
         $result = $db->getKendoList($columnCount, $cols);
