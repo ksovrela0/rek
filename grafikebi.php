@@ -373,23 +373,26 @@
 		});
 	});
 	$(document).on('click','#button_trash',function(){
-		var removeIDS = [];
-		var entityGrid = $("#users").data("kendoGrid");
-		var rows = entityGrid.select();
-		rows.each(function(index, row) {
-			var selectedItem = entityGrid.dataItem(row);
-			// selectedItem has EntityVersionId and the rest of your model
-			removeIDS.push(selectedItem.id);
-		});
-		$.ajax({
-			url: aJaxURL,
-			type: "POST",
-			data: "act=disable_g&id=" + removeIDS,
-			dataType: "json",
-			success: function (data) {
-				$("#users").data("kendoGrid").dataSource.read();
-			}
-		});
+		if(confirm("ნამდვილად გსურთ მონიშნული გრაფიკები წაშლა?")){
+			var removeIDS = [];
+			var entityGrid = $("#users").data("kendoGrid");
+			var rows = entityGrid.select();
+			rows.each(function(index, row) {
+				var selectedItem = entityGrid.dataItem(row);
+				// selectedItem has EntityVersionId and the rest of your model
+				removeIDS.push(selectedItem.id);
+			});
+			$.ajax({
+				url: aJaxURL,
+				type: "POST",
+				data: "act=disable_g&id=" + removeIDS,
+				dataType: "json",
+				success: function (data) {
+					$("#users").data("kendoGrid").dataSource.read();
+				}
+			});
+		}
+		
 	});
 	$( document ).ready(function() {
 		LoadKendoTable_incomming()
