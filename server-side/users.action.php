@@ -1219,7 +1219,7 @@ function getObject($id){
                                 users.group_id,
                                 users.username,
                                 users.password,
-                                users.position,
+                                users.position_id,
                                 users.birth_date,
                                 users.address,
                                 users.social,
