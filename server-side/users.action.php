@@ -654,7 +654,7 @@ switch ($act){
                                     users.phone,
                                     users.birth_date,
                                     users.address,
-                                    IF(users.pension = 1, 'კი', 'არა'),
+                                    'sss' AS shvebuleba,
                                     IF(users.social = 1, 'კი', 'არა'),
                                     CASE
                                         WHEN users.avatar IS NULL OR users.avatar = '' THEN '<img src=\"assets/img/no_avatar.png\" style=\"width:100px;\">'
@@ -675,6 +675,34 @@ switch ($act){
                             WHERE users.actived = 1 AND users.layoffed = 0");
 
         $result = $db->getKendoList($columnCount, $cols);
+
+        
+        foreach($result['data'] AS $key=>$usr){
+
+            //var_dump($usr['id']);
+            $db->setQuery(" SELECT GROUP_CONCAT(CONCAT(shvb.shvebus, ' დღე') SEPARATOR ',<br>') AS tt FROM (SELECT CONCAT(YEAR(vacations.start_date),': ',SUM(IF(DATEDIFF(vacations.end_date, vacations.start_date) = 0,1,DATEDIFF(vacations.end_date, vacations.start_date)))) AS shvebus
+
+                            FROM vacations
+                            
+                            WHERE vacations.user_id = '$usr[id]' AND vacations.actived = 1 AND vacations.type_id = 1
+                            GROUP BY YEAR(vacations.start_date)) AS shvb");
+
+            $result['data'][$key]['pension'] = $db->getResultArray()['result'][0]['tt'];
+
+
+
+            $db->setQuery(" SELECT GROUP_CONCAT(CONCAT(shvb.shvebus, ' დღე') SEPARATOR ',<br>') AS tt FROM (SELECT CONCAT(YEAR(vacations.start_date),': ',SUM(IF(DATEDIFF(vacations.end_date, vacations.start_date) = 0,1,DATEDIFF(vacations.end_date, vacations.start_date)))) AS shvebus
+
+                            FROM vacations
+                            
+                            WHERE vacations.user_id = '$usr[id]' AND vacations.actived = 1 AND vacations.type_id = 2
+                            GROUP BY YEAR(vacations.start_date)) AS shvb");
+
+            $result['data'][$key]['social'] = $db->getResultArray()['result'][0]['tt'];
+        }
+        
+
+
         $data = $result;
     break;
     case 'get_list_branches':
