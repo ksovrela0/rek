@@ -644,8 +644,14 @@
 			data: params,
 			dataType: "json",
 			success: function(data){
-				$("#users").data("kendoGrid").dataSource.read();
-				$('#get_edit_page').dialog("close");
+				if(typeof data.error != 'undefined'){
+					alert(data.error);
+				}
+				else{
+					$("#users").data("kendoGrid").dataSource.read();
+					$('#get_edit_page').dialog("close");
+				}
+				
 			}
 		});
 		

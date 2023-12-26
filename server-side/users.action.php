@@ -104,12 +104,24 @@ switch ($act){
         
         
         if($id == ''){
-            $db->setQuery(" INSERT INTO vacations SET type_id = '$vacation_type',
-                                                    user_id = '$user_id',
-                                                    `start_date` = '$start_date',
-                                                    end_date = '$end_date',
-                                                    `create_date` = NOW()");
-            $db->execQuery();
+            $db->setQuery("SELECT COUNT(*) AS CC FROM vacations WHERE actived = 1 AND ($start_date BETWEEN `start_date` AND `end_date`
+                                                                OR $end_date BETWEEN `start_date` AND `end_date`
+                                                                OR (`start_date` BETWEEN '$start_date' AND '$end_date'
+                                                                    AND `end_date` BETWEEN '$start_date' AND '$end_date'))");
+
+            if($db->getResultArray()['result'][0]['CC'] > 0){
+                $data['error'] = 'მითითებულ თარიღებში შვებულება ან dayoff უკვე არსებობს';
+            }
+            else{
+                $db->setQuery(" INSERT INTO vacations SET type_id = '$vacation_type',
+                                user_id = '$user_id',
+                                `start_date` = '$start_date',
+                                end_date = '$end_date',
+                                `create_date` = NOW()");
+                $db->execQuery();
+                $data['status'] = 1;
+            }
+            
         }
         else{
             $db->setQuery(" UPDATE  vacations 
@@ -119,6 +131,7 @@ switch ($act){
                                                     end_date = '$end_date'
                             WHERE   id = '$id'");
             $db->execQuery();
+            $data['status'] = 1;
         }
         break;
     case 'save_grafik':
@@ -1163,7 +1176,7 @@ function get_vac_type($id){
     $cats = $db->getResultArray();
     $data .= '<option value="0" selected="selected">აირჩიეთ</option>';
     foreach($cats['result'] AS $cat){
-        if($cat[id] == $id){
+        if($cat['id'] == $id){
             $data .= '<option value="'.$cat['id'].'" selected="selected">'.$cat['name'].'</option>';
         }
         else{
