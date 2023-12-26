@@ -13,7 +13,13 @@ switch ($act){
     break;
     case 'get_add_page':
         $id = $_REQUEST['id'];
-        $data = array('page' => getPage());
+
+        $db->setQuery(" INSERT INTO users SET firstname = 'temp', actived = 0");
+        $db->execQuery();
+
+        $user_id = $db->getLastId();
+
+        $data = array('page' => getPage(array(),$user_id));
     break;
     case 'get_layoff_page':
         $user_id = $_REQUEST['user_id'];
@@ -226,7 +232,8 @@ switch ($act){
         }
         
         if($id == ''){
-            $db->setQuery(" INSERT INTO users SET firstname = '$firstname',
+            $db->setQuery(" UPDATE  users 
+            SET firstname = '$firstname',
                                                     lastname = '$lastname',
                                                     pid = '$pid',
                                                     phone = '$phone',
@@ -245,7 +252,6 @@ switch ($act){
                                                     anketa_checkbox = '$anketa_checkbox',
                                                     instructions_checkbox = '$instructions_checkbox',
                                                     orderTaken_checkbox = '$orderTaken_checkbox',
-
                                                     id = '$uid'");
             $db->execQuery();
         }
@@ -879,15 +885,19 @@ function getPageGrafik($res = ''){
 
     return $data;
 }
-function getPage($res = ''){
+function getPage($res = array(),$u_id = ''){
     GLOBAL $user_gr;
     if($user_gr == 11){
         $hide = 'style="display:none;"';
     }
 
-    if($res == ''){
-        $disable_fields = 'style="display:none;"';
+    if($u_id == ''){
+        $u_id = $res['id'];
     }
+
+    /* if(empty($res)){
+        $disable_fields = 'style="display:none;"';
+    } */
 
     $data .= '
     
@@ -896,8 +906,8 @@ function getPage($res = ''){
         <legend>ინფორმაცია</legend>
         <div class="row">
             <div class="col-sm-4">
-                <label>ID</label>
-                <input value="'.$res['id'].'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="u_id" class="idle" autocomplete="off">
+                <label>ID (არ შეცვალოთ)</label>
+                <input value="'.$u_id.'" data-nec="0" style="height: 18px; width: 95%;" type="text" id="u_id" class="idle" autocomplete="off">
             </div>
             <div class="col-sm-4" '.$hide.'>
                 <label>სახელი</label>
@@ -1095,7 +1105,7 @@ function getPage($res = ''){
         </div>
     </fieldset>
     
-    <input type="hidden" id="user_id" value="'.$res['id'].'">
+    <input type="hidden" id="user_id" value="'.$u_id.'">
     ';
 
     return $data;

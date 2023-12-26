@@ -514,7 +514,7 @@
 				GetDate('birth_date');
 				$("#get_edit_page").dialog({
 					resizable: false,
-					height: 600,
+					height: 1000,
 					width: 900,
 					modal: true,
 					buttons: {
