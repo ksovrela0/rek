@@ -316,11 +316,11 @@
 			$("#anketa_file").css('display','block');
 
 			if($("#anketa_file_file").attr('href') != '#'){
-				$("#anketa_file_file").css('display','block');
+				$("#anketa_file_file,#anketa_file_del").css('display','block');
 			}
 		}
 		else{
-			$("#anketa_file,#anketa_file_file").css('display','none');
+			$("#anketa_file,#anketa_file_file,#anketa_file_del").css('display','none');
 		}
 	});	
 
@@ -330,11 +330,11 @@
 			$("#instructions_file").css('display','block');
 
 			if($("#instructions_file_file").attr('href') != '#'){
-				$("#instructions_file_file").css('display','block');
+				$("#instructions_file_file,#instructions_file_del").css('display','block');
 			}
 		}
 		else{
-			$("#instructions_file,#instructions_file_file").css('display','none');
+			$("#instructions_file,#instructions_file_file,#instructions_file_del").css('display','none');
 		}
 	});	
 
@@ -344,11 +344,11 @@
 			$("#orderTaken_file").css('display','block');
 
 			if($("#orderTaken_file_file").attr('href') != '#'){
-				$("#orderTaken_file_file").css('display','block');
+				$("#orderTaken_file_file,#orderTaken_file_del").css('display','block');
 			}
 		}
 		else{
-			$("#orderTaken_file,#orderTaken_file_file").css('display','none');
+			$("#orderTaken_file,#orderTaken_file_file,#orderTaken_file_del").css('display','none');
 		}
 	});	
 	$(document).on('click', "#upProdImg", function(){
