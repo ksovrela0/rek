@@ -185,7 +185,7 @@ switch ($act){
         $uid = intval($_REQUEST['uid']);
         $firstname = $_REQUEST['firstname'];
         $lastname = $_REQUEST['lastname'];
-        $pid = intval($_REQUEST['pid']);
+        $pid = $_REQUEST['pid'];
         $phone = $_REQUEST['phone'];
         $group_id = $_REQUEST['user_group'];
         $username = $_REQUEST['username'];
