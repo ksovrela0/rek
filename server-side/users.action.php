@@ -252,6 +252,7 @@ switch ($act){
                                                     anketa_checkbox = '$anketa_checkbox',
                                                     instructions_checkbox = '$instructions_checkbox',
                                                     orderTaken_checkbox = '$orderTaken_checkbox',
+                                                    actived = 1,
                                                     id = '$uid'");
             $db->execQuery();
         }
@@ -275,6 +276,7 @@ switch ($act){
                                                 anketa_checkbox = '$anketa_checkbox',
                                                 instructions_checkbox = '$instructions_checkbox',
                                                 orderTaken_checkbox = '$orderTaken_checkbox',
+                                                actived = 1,
                                                 id = '$uid'
                             WHERE   id = '$id'");
             $db->execQuery();
